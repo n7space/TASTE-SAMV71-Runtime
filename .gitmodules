@@ -1,3 +1,8 @@
 [submodule "cmake"]
 	path = cmake
 	url = https://github.com/n7space/cmake-tools
+    branch = V10.4.5
+[submodule "SAMV71-BSP"]
+	path = SAMV71-BSP
+	url = git@github.com:n7space/SAMV71-BSP.git
+	branch = feature-init-repo
