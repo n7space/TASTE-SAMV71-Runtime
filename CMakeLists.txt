@@ -18,4 +18,10 @@ add_library(common_build_options INTERFACE)
 include(CommonBuildOptions)
 include(Sanitizers)
 
-add_subdirectory(build)
+add_library(bsp_build_options INTERFACE)
+target_compile_definitions(bsp_build_options
+    INTERFACE   USE_UART_IO
+                LOW_LEVEL_IO_UART_ID=4)
+
+add_subdirectory(SAMV71-BSP)
+add_subdirectory(src)

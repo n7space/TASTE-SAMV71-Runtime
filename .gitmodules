@@ -6,3 +6,6 @@
 	path = SAMV71-BSP
 	url = git@github.com:n7space/SAMV71-BSP.git
 	branch = feature-init-repo
+[submodule "FreeRTOS-Kernel"]
+	path = FreeRTOS-Kernel
+	url = git@github.com:FreeRTOS/FreeRTOS-Kernel.git
