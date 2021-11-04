@@ -50,7 +50,7 @@ main()
 
     vTaskStartScheduler();
 
-    for(;;) {
+    for (;;) {
         ;
     }
 
@@ -68,7 +68,7 @@ prvTask1(void* pvParameters)
     /* Initialise xNextWakeTime - this only needs to be done once. */
     xNextWakeTime = xTaskGetTickCount();
 
-    for(;;) {
+    for (;;) {
         /* Send to the queue - causing the queue receive task to unblock and
             toggle the LED.  0 is used as the block time so the sending operation
             will not block - it shouldn't need to block as the queue should always
@@ -92,7 +92,7 @@ prvTask2(void* pvParameters)
     /* Initialise xNextWakeTime - this only needs to be done once. */
     xNextWakeTime = xTaskGetTickCount();
 
-    for(;;) {
+    for (;;) {
         /* Wait until something arrives in the queue - this task will block
         indefinitely provided INCLUDE_vTaskSuspend is set to 1 in
         FreeRTOSConfig.h. */
@@ -102,7 +102,7 @@ prvTask2(void* pvParameters)
         consoleWrite(&ulValueToSend, 1);
 
         ulValueToSend++;
-        if(ulValueToSend > 'z') {
+        if (ulValueToSend > 'z') {
             ulValueToSend = 'A';
         }
         // /* Place this task in the blocked state until it is time to run again. */
@@ -140,9 +140,7 @@ vApplicationTickHook()
 void
 consoleWrite(uint8_t* buffer, uint16_t size)
 {
-    // taskENTER_CRITICAL();
-    for(uint16_t i = 0; i < size; i++) {
+    for (uint16_t i = 0; i < size; i++) {
         Uart_write(&consoleUart, buffer[i], UART_TIMEOUT, NULL);
     }
-    // taskEXIT_CRITICAL();
 }

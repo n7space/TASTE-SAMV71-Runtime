@@ -10,6 +10,7 @@ target_link_libraries(FreeRTOSApp
     PRIVATE     SAMV71::Startup
                 Samv71FreeRtos::Init
                 SAMV71::Uart
-                SAMV71::FreeRTOS)
+                SAMV71::FreeRTOS
+                )
 
 add_format_target(FreeRTOSApp)

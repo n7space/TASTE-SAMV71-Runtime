@@ -16,6 +16,7 @@ target_include_directories(Samv71FreeRtos
                 ${FREERTOS_DIR}/include
                 ${FREERTOS_DIR}/portable/GCC/ARM_CM7/r0p1)
 target_compile_definitions(Samv71FreeRtos
-    PUBLIC      __SAMV71Q21__)
+    PUBLIC      __SAMV71Q21__
+                configAPPLICATION_ALLOCATED_HEAP=1)
 
 add_library(SAMV71::FreeRTOS ALIAS Samv71FreeRtos)
