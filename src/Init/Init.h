@@ -1,3 +1,4 @@
+
 /**@file
  * This file is part of the TASTE Runtime SAMV71.
  *
@@ -27,19 +28,20 @@
  * @file    Init.h
  * @brief   Init - SAMV71Q21 Xplained board initialization
  *
- * The Init component is used by TASTE runtime to initialize SAMV71Q21 Xplained board,
- * the following sequence will be used:
+ *  The Init component used by TASTE runtime to initialize SAMV71Q21 Xplained board,
+ *  the following sequence is used:
  *
- * ConfigureStartup (copying relevant sections into SRAM)
- * Configure Wdt (watchdog)
- * Configure Pmc (peripheral power)
- * Configure Fpu (floating point unit)
- * Configure Pio (input/output pins)
- * Configure Sdramc (SDRAM controller)
- * Configure FreeRTOS to use SDRAM for task stacks
- * Configure Uart via Hal (Uart for use by AdaRtl)
- * Initialize and start FreeRTOS
+ *  Configure Wdt (watchdog)
+ *  Configure Pmc (peripheral power)
+ *  Configure Fpu (floating point unit)
+ *  Configure Pio (input/output pins)
+ *  Configure Sdramc (SDRAM controller. pio and pmc needed for SDRAM operation configured)
+ *  Configure Uart via Hal (Uart for use by AdaRtl)
  *
+ *  NOTE: in contrary to ETB-N7S-ADD-001 document:
+ *  1. The relocatable sections are copied to sram by the startup file
+ *  2. Configuration of FreeRTOS stack is done in FreeRTOSConfig.h
+ *  3. SysTick is not initialized here as it is initialized by FreeRTOS.
  */
 
 void
