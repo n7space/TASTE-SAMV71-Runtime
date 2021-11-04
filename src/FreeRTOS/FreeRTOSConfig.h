@@ -67,7 +67,7 @@
 
 #define configAPPLICATION_ALLOCATED_HEAP        1   
 
-__attribute__((section(".sdram")))
+__attribute__((section(".sdramMemorySection")))
 static uint8_t ucHeap[configTOTAL_HEAP_SIZE];
 
 /* The full demo always has tasks to run so the tick will never be turned off.
