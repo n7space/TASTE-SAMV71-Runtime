@@ -67,7 +67,6 @@ Init_setup_hardware(void)
     Init_setup_sdram();
 }
 
-
 static void
 Init_setup_watchdog(void)
 {
@@ -271,7 +270,7 @@ Init_setup_sdram_pmc(void)
 static inline void
 Init_setup_sdram_config(Sdramc* const sdramc)
 {
-    //These values apply to IS42S16100H chip
+    // These values apply to IS42S16100H chip
     const Sdramc_Config IS42S16100H_SDRAM_CONFIG = {
         .refreshTimerCount = 1172, // Value 15.625 us for 75 MHz
         .columnBits = Sdramc_NumberOfColumnBits_Col8,
@@ -293,7 +292,8 @@ Init_setup_sdram_config(Sdramc* const sdramc)
         .deviceType = Sdramc_MemoryDeviceType_Sdram,
         .loadModeRegisterCommandToActiveOrRefreshCommand = 2,
         .supportUnalignedAccess = Sdramc_SupportUnalignedAccess_Supported,
-        .isRefreshErrorStatusInterruptEnabled = false, };
+        .isRefreshErrorStatusInterruptEnabled = false,
+    };
 
     Sdramc_setConfig(sdramc, &IS42S16100H_SDRAM_CONFIG);
 }

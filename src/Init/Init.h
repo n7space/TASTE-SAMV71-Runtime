@@ -44,7 +44,6 @@
  *  3. SysTick is not initialized here as it is initialized by FreeRTOS.
  */
 
-void
-Init_setup_hardware(void);
+void Init_setup_hardware(void);
 
 #endif

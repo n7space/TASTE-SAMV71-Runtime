@@ -18,5 +18,7 @@ target_link_libraries(Samv71RuntimeInit
                 SAMV71::Sdramc
                 SAMV71::FreeRTOS)
 
+add_format_target(Samv71RuntimeInit)                
+
 set_target_properties(Samv71RuntimeInit PROPERTIES OUTPUT_NAME "init")
 add_library(SAMV71::Runtime::Init ALIAS Samv71RuntimeInit)
