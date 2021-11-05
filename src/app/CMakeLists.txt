@@ -8,7 +8,7 @@ target_include_directories(FreeRTOSApp
                 ..)
 target_link_libraries(FreeRTOSApp
     PRIVATE     SAMV71::Startup
-                Samv71FreeRtos::Init
+                SAMV71::Runtime::Init
                 SAMV71::Uart
                 SAMV71::FreeRTOS
                 )
