@@ -21,16 +21,16 @@ void consoleWrite(uint8_t* buffer, uint16_t size);
 
 #define UART_BAUDRATE 38400
 #define UART_TIMEOUT 100000u
-#define TASK1_PIORITY 1 //(tskIDLE_PRIORITY + 2)
-#define TASK2_PIORITY 2 //(tskIDLE_PRIORITY + 1)
+#define TASK1_PIORITY 1
+#define TASK2_PIORITY 2
 
 #define TASK1_MSG "\n\rHello from task1\t Received: "
 #define TASK2_MSG "\n\rHello from task2\t Sent: "
 
 /* The rate at which data is sent to the queue.  The 200ms value is converted
 to ticks using the portTICK_PERIOD_MS constant. */
-#define TASK1_FREQUENCY (100 / portTICK_PERIOD_MS)
-#define TASK2_FREQUENCY (500 / portTICK_PERIOD_MS)
+#define TASK1_DELAY (100 / portTICK_PERIOD_MS)
+#define TASK2_DELAY (500 / portTICK_PERIOD_MS)
 
 Uart consoleUart;
 /* The queue used by both tasks. */
@@ -50,7 +50,7 @@ main()
 
     vTaskStartScheduler();
 
-    for (;;) {
+    for(;;) {
         ;
     }
 
@@ -68,15 +68,11 @@ prvTask1(void* pvParameters)
     /* Initialise xNextWakeTime - this only needs to be done once. */
     xNextWakeTime = xTaskGetTickCount();
 
-    for (;;) {
-        /* Send to the queue - causing the queue receive task to unblock and
-            toggle the LED.  0 is used as the block time so the sending operation
-            will not block - it shouldn't need to block as the queue should always
-            be empty at this point in the code. */
-        /* Place this task in the blocked state until it is time to run again. */
-        // vTaskDelayUntil(&xNextWakeTime, TASK1_FREQUENCY);
-
-        xQueueReceive(xQueue, &ulReceivedValue, TASK1_FREQUENCY);
+    for(;;) {
+        /** Wait until something arrives in the queue - this task will block
+         * for 100ms
+         */
+        xQueueReceive(xQueue, &ulReceivedValue, TASK1_DELAY);
         consoleWrite((uint8_t*)TASK1_MSG, sizeof(TASK1_MSG));
         consoleWrite(&ulReceivedValue, 1);
     }
@@ -92,21 +88,22 @@ prvTask2(void* pvParameters)
     /* Initialise xNextWakeTime - this only needs to be done once. */
     xNextWakeTime = xTaskGetTickCount();
 
-    for (;;) {
-        /* Wait until something arrives in the queue - this task will block
-        indefinitely provided INCLUDE_vTaskSuspend is set to 1 in
-        FreeRTOSConfig.h. */
+    for(;;) {
+        /** Send to the queue - causing the queue receive task to unblock.
+         * Sending operation will not block - it shouldn't need to block
+         * as the queue should always  be empty at this point in the code.
+         */
         xQueueSend(xQueue, &ulValueToSend, portMAX_DELAY);
 
         consoleWrite((uint8_t*)TASK2_MSG, sizeof(TASK2_MSG));
         consoleWrite(&ulValueToSend, 1);
 
         ulValueToSend++;
-        if (ulValueToSend > 'z') {
+        if(ulValueToSend > 'z') {
             ulValueToSend = 'A';
         }
-        // /* Place this task in the blocked state until it is time to run again. */
-        vTaskDelayUntil(&xNextWakeTime, TASK2_FREQUENCY);
+        // Place this task in the blocked state until it is time to run again. */
+        vTaskDelayUntil(&xNextWakeTime, TASK2_DELAY);
     }
 }
 
@@ -140,7 +137,7 @@ vApplicationTickHook()
 void
 consoleWrite(uint8_t* buffer, uint16_t size)
 {
-    for (uint16_t i = 0; i < size; i++) {
+    for(uint16_t i = 0; i < size; i++) {
         Uart_write(&consoleUart, buffer[i], UART_TIMEOUT, NULL);
     }
 }
