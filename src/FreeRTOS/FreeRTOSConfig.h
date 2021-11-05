@@ -65,7 +65,9 @@
 #define configUSE_APPLICATION_TASK_TAG          0
 #define configUSE_COUNTING_SEMAPHORES           1
 
+#ifndef configAPPLICATION_ALLOCATED_HEAP
 #define configAPPLICATION_ALLOCATED_HEAP        1   
+#endif
 
 __attribute__((section(".sdramMemorySection")))
 static uint8_t ucHeap[configTOTAL_HEAP_SIZE];
