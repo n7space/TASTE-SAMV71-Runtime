@@ -152,7 +152,7 @@ Init_setup_uart(void)
                                .baudRate = UART_BAUDRATE,
                                .baudRateClkSrc = Uart_BaudRateClk_PeripheralCk,
                                .baudRateClkFreq = SystemConfig_DefaultPeriphClock };
-
+    // TODO replace it with HAL module
     Uart_init(Uart_Id_4, &consoleUart);
     Uart_setConfig(&consoleUart, &uartConfig);
 }
@@ -294,6 +294,5 @@ Init_setup_sdram_config(Sdramc* const sdramc)
         .supportUnalignedAccess = Sdramc_SupportUnalignedAccess_Supported,
         .isRefreshErrorStatusInterruptEnabled = false,
     };
-
     Sdramc_setConfig(sdramc, &IS42S16100H_SDRAM_CONFIG);
 }
