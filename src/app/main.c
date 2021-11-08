@@ -1,44 +1,52 @@
 #include "FreeRTOS.h"
 #include "task.h"
+#include "queue.h"
 
-#include <Fpu/Fpu.h>
-#include <Nvic/Nvic.h>
-#include <Pio/Pio.h>
-#include <Pmc/Pmc.h>
-#include <SystemConfig/SystemConfig.h>
 #include <Uart/Uart.h>
-#include <Wdt/Wdt.h>
+#include <Init/Init.h>
 
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
 
-static void prvSetupHardware();
-static void prvSetupWatchdog();
-static void prvSetupFpu();
-static void prvSetupClock();
-static void prvSetupPio();
-static void prvSetupNvic();
-static void prvSetupUart();
-
-static void prvUartSendDataTask(void* pvParameters);
+static void prvTask1(void* pvParameters);
+static void prvTask2(void* pvParameters);
 
 void vApplicationMallocFailedHook();
 void vApplicationStackOverflowHook(TaskHandle_t pxTask, char* pcTaskName);
 void vApplicationIdleHook();
 void vApplicationTickHook();
 
+void consoleWrite(uint8_t* buffer, uint16_t size);
+
 #define UART_BAUDRATE 38400
 #define UART_TIMEOUT 100000u
-#define TASK_PIORITY (tskIDLE_PRIORITY + 2)
+#define TASK1_PIORITY 1
+#define TASK2_PIORITY 2
 
-static Uart uart;
+#define TASK1_MSG "\n\rHello from task1\t Received: "
+#define TASK2_MSG "\n\rHello from task2\t Sent: "
+
+/* The rate at which data is sent to the queue.  The 200ms value is converted
+to ticks using the portTICK_PERIOD_MS constant. */
+#define TASK1_DELAY (100 / portTICK_PERIOD_MS)
+#define TASK2_DELAY (500 / portTICK_PERIOD_MS)
+
+Uart consoleUart;
+/* The queue used by both tasks. */
+static QueueHandle_t xQueue = NULL;
+uint8_t buffer[25];
 
 int
 main()
 {
-    prvSetupHardware();
+    Init_setup_hardware();
 
-    xTaskCreate(prvUartSendDataTask, "UartSendData", configMINIMAL_STACK_SIZE, NULL, TASK_PIORITY, NULL);
+    /* Create the queue. */
+    xQueue = xQueueCreate(1, sizeof(uint32_t));
+
+    xTaskCreate(prvTask2, "Task2", configMINIMAL_STACK_SIZE, NULL, TASK2_PIORITY, NULL);
+    xTaskCreate(prvTask1, "Task1", configMINIMAL_STACK_SIZE, NULL, TASK1_PIORITY, NULL);
 
     vTaskStartScheduler();
 
@@ -50,124 +58,53 @@ main()
 }
 
 static void
-prvSetupHardware()
+prvTask1(void* pvParameters)
 {
-    prvSetupWatchdog();
-    prvSetupFpu();
-    prvSetupClock();
-    prvSetupPio();
-    prvSetupNvic();
-    prvSetupUart();
-}
+    uint8_t ulReceivedValue;
 
-static void
-prvSetupWatchdog()
-{
-    Wdt_Config wdtConfig = {
-        .counterValue = 0x0FFF,
-        .deltaValue = 0x0FFF,
-        .isResetEnabled = false,
-        .isFaultInterruptEnabled = false,
-        .isDisabled = true,
-        .isHaltedOnIdle = false,
-        .isHaltedOnDebug = false,
-    };
-
-    Wdt wdt;
-    Wdt_init(&wdt);
-    Wdt_setConfig(&wdt, &wdtConfig);
-}
-
-static void
-prvSetupFpu()
-{
-    Fpu fpu;
-    Fpu_init(&fpu);
-    Fpu_startup(&fpu);
-}
-
-static void
-prvSetupClock()
-{
-    int errCode = 0;
-
-    Pmc_Config pmcConfig = SystemConfig_getPmcDefaultConfig();
-    Pmc_setConfig(&pmcConfig, &errCode);
-
-    assert(errCode == 0);
-}
-
-static void
-prvSetupPio()
-{
-    Pmc_enablePeripheralClk(Pmc_PeripheralId_PioD);
-    Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart4);
-
-    Pio pio;
-    Pio_init(Pio_Port_D, &pio);
-
-    Pio_Port_Config pioConfig = {
-        .pinsConfig = {
-            .pull = Pio_Pull_Up,
-            .filter = Pio_Filter_None,
-            .isMultiDriveEnabled = false,
-            .isSchmittTriggerDisabled = false,
-            .irq = Pio_Irq_None,
-        },
-        .debounceFilterDiv = 0
-    };
-
-    pioConfig.pins = PIO_PIN_18;
-    pioConfig.pinsConfig.control = Pio_Control_PeripheralC;
-    pioConfig.pinsConfig.direction = Pio_Direction_Input;
-    Pio_setPortConfig(&pio, &pioConfig);
-
-    pioConfig.pins = PIO_PIN_19;
-    pioConfig.pinsConfig.control = Pio_Control_PeripheralC;
-    pioConfig.pinsConfig.direction = Pio_Direction_Output;
-    Pio_setPortConfig(&pio, &pioConfig);
-}
-
-static void
-prvSetupNvic()
-{
-    Nvic_enableInterrupt(Nvic_Irq_Uart4);
-    Nvic_setInterruptPriority(Nvic_Irq_Uart4, 0);
-}
-
-static void
-prvSetupUart()
-{
-    Uart_Config uartConfig = { .isTxEnabled = true,
-                               .isRxEnabled = true,
-                               .isTestModeEnabled = false,
-                               .parity = Uart_Parity_None,
-                               .baudRate = UART_BAUDRATE,
-                               .baudRateClkSrc = Uart_BaudRateClk_PeripheralCk,
-                               .baudRateClkFreq = SystemConfig_DefaultPeriphClock };
-
-    Uart_init(Uart_Id_4, &uart);
-    Uart_setConfig(&uart, &uartConfig);
-}
-
-static void
-prvUartSendDataTask(void* pvParameters)
-{
+    TickType_t xNextWakeTime;
     (void)pvParameters;
 
-    Uart_write(&uart, 0x48, UART_TIMEOUT, NULL);
-    Uart_write(&uart, 0x65, UART_TIMEOUT, NULL);
-    Uart_write(&uart, 0x6c, UART_TIMEOUT, NULL);
-    Uart_write(&uart, 0x6c, UART_TIMEOUT, NULL);
-    Uart_write(&uart, 0x6f, UART_TIMEOUT, NULL);
-    Uart_write(&uart, 0x2c, UART_TIMEOUT, NULL);
-    Uart_write(&uart, 0x20, UART_TIMEOUT, NULL);
-    Uart_write(&uart, 0x57, UART_TIMEOUT, NULL);
-    Uart_write(&uart, 0x6f, UART_TIMEOUT, NULL);
-    Uart_write(&uart, 0x72, UART_TIMEOUT, NULL);
-    Uart_write(&uart, 0x6c, UART_TIMEOUT, NULL);
-    Uart_write(&uart, 0x64, UART_TIMEOUT, NULL);
-    Uart_write(&uart, 0x21, UART_TIMEOUT, NULL);
+    /* Initialise xNextWakeTime - this only needs to be done once. */
+    xNextWakeTime = xTaskGetTickCount();
+
+    for(;;) {
+        /** Wait until something arrives in the queue - this task will block
+         * for 100ms
+         */
+        xQueueReceive(xQueue, &ulReceivedValue, TASK1_DELAY);
+        consoleWrite((uint8_t*)TASK1_MSG, sizeof(TASK1_MSG));
+        consoleWrite(&ulReceivedValue, 1);
+    }
+}
+
+static void
+prvTask2(void* pvParameters)
+{
+    uint8_t ulValueToSend = 'A';
+    TickType_t xNextWakeTime;
+    (void)pvParameters;
+
+    /* Initialise xNextWakeTime - this only needs to be done once. */
+    xNextWakeTime = xTaskGetTickCount();
+
+    for(;;) {
+        /** Send to the queue - causing the queue receive task to unblock.
+         * Sending operation will not block - it shouldn't need to block
+         * as the queue should always  be empty at this point in the code.
+         */
+        xQueueSend(xQueue, &ulValueToSend, portMAX_DELAY);
+
+        consoleWrite((uint8_t*)TASK2_MSG, sizeof(TASK2_MSG));
+        consoleWrite(&ulValueToSend, 1);
+
+        ulValueToSend++;
+        if(ulValueToSend > 'z') {
+            ulValueToSend = 'A';
+        }
+        // Place this task in the blocked state until it is time to run again. */
+        vTaskDelayUntil(&xNextWakeTime, TASK2_DELAY);
+    }
 }
 
 void
@@ -195,4 +132,12 @@ vApplicationIdleHook()
 void
 vApplicationTickHook()
 {
+}
+
+void
+consoleWrite(uint8_t* buffer, uint16_t size)
+{
+    for(uint16_t i = 0; i < size; i++) {
+        Uart_write(&consoleUart, buffer[i], UART_TIMEOUT, NULL);
+    }
 }

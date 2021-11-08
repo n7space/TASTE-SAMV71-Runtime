@@ -65,6 +65,13 @@
 #define configUSE_APPLICATION_TASK_TAG          0
 #define configUSE_COUNTING_SEMAPHORES           1
 
+#ifndef configAPPLICATION_ALLOCATED_HEAP
+#define configAPPLICATION_ALLOCATED_HEAP        1   
+#endif
+
+__attribute__((section(".sdramMemorySection")))
+static uint8_t ucHeap[configTOTAL_HEAP_SIZE];
+
 /* The full demo always has tasks to run so the tick will never be turned off.
 The blinky demo will use the default tickless idle implementation to turn the
 tick off. */
@@ -104,9 +111,9 @@ to exclude the API function. */
 /* Cortex-M specific definitions. */
 #ifdef __NVIC_PRIO_BITS
     /* __BVIC_PRIO_BITS will be specified when CMSIS is being used. */
-    #define configPRIO_BITS             __NVIC_PRIO_BITS
+#define configPRIO_BITS             __NVIC_PRIO_BITS
 #else
-    #define configPRIO_BITS             3        /* 7 priority levels */
+#define configPRIO_BITS             3        /* 7 priority levels */
 #endif
 
 /* The lowest interrupt priority that can be used in a call to a "set priority"

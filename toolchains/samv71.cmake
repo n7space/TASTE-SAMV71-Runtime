@@ -24,6 +24,7 @@ set(CMAKE_CXX_FLAGS
 -ffunction-sections")
 set(CMAKE_EXE_LINKER_FLAGS
 "-eexception_table \
+-Wl,-Map=output.map \
 -Wl,--gc-sections \
 -specs=nosys.specs \
 -T${SAMV71_BSP_DIR}/ld/samv71q21_sram.ld")
