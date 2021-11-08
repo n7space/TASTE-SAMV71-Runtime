@@ -294,5 +294,7 @@ Init_setup_sdram_config(Sdramc* const sdramc)
         .supportUnalignedAccess = Sdramc_SupportUnalignedAccess_Supported,
         .isRefreshErrorStatusInterruptEnabled = false,
     };
+
     Sdramc_setConfig(sdramc, &IS42S16100H_SDRAM_CONFIG);
 }
+
