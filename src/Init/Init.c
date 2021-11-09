@@ -31,12 +31,13 @@
 #include "Uart/Uart.h"
 #include "Sdramc/Sdramc.h"
 
-#include "HAL/SAMV71_Uart_serial.h"
+#include "HAL/Hal.h"
 
 #include <assert.h>
 #include <string.h>
 
 extern Uart consoleUart;
+extern Hal_Uart halUart;
 
 static void Init_setup_watchdog(void);
 static void Init_setup_pmc(void);
@@ -109,54 +110,62 @@ Init_setup_pmc(void)
 static void
 Init_setup_pio(void)
 {
-    Pmc_enablePeripheralClk(Pmc_PeripheralId_PioD);
-    Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart4);
+    // Pmc_enablePeripheralClk(Pmc_PeripheralId_PioD);
+    // Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart4);
 
-    Pio pio;
-    Pio_init(Pio_Port_D, &pio);
+    // Pio pio;
+    // Pio_init(Pio_Port_D, &pio);
 
-    Pio_Port_Config pioConfig = {
-        .pinsConfig = {
-            .pull = Pio_Pull_Up,
-            .filter = Pio_Filter_None,
-            .isMultiDriveEnabled = false,
-            .isSchmittTriggerDisabled = false,
-            .irq = Pio_Irq_None,
-        },
-        .debounceFilterDiv = 0
-    };
+    // Pio_Port_Config pioConfig = {
+    //     .pinsConfig = {
+    //         .pull = Pio_Pull_Up,
+    //         .filter = Pio_Filter_None,
+    //         .isMultiDriveEnabled = false,
+    //         .isSchmittTriggerDisabled = false,
+    //         .irq = Pio_Irq_None,
+    //     },
+    //     .debounceFilterDiv = 0
+    // };
 
-    pioConfig.pins = PIO_PIN_18;
-    pioConfig.pinsConfig.control = Pio_Control_PeripheralC;
-    pioConfig.pinsConfig.direction = Pio_Direction_Input;
-    Pio_setPortConfig(&pio, &pioConfig);
+    // pioConfig.pins = PIO_PIN_18;
+    // pioConfig.pinsConfig.control = Pio_Control_PeripheralC;
+    // pioConfig.pinsConfig.direction = Pio_Direction_Input;
+    // Pio_setPortConfig(&pio, &pioConfig);
 
-    pioConfig.pins = PIO_PIN_19;
-    pioConfig.pinsConfig.control = Pio_Control_PeripheralC;
-    pioConfig.pinsConfig.direction = Pio_Direction_Output;
-    Pio_setPortConfig(&pio, &pioConfig);
+    // pioConfig.pins = PIO_PIN_19;
+    // pioConfig.pinsConfig.control = Pio_Control_PeripheralC;
+    // pioConfig.pinsConfig.direction = Pio_Direction_Output;
+    // Pio_setPortConfig(&pio, &pioConfig);
 }
 
 static void
 Init_setup_nvic(void)
 {
     Nvic_enableInterrupt(Nvic_Irq_Uart4);
-    Nvic_setInterruptPriority(Nvic_Irq_Uart4, 0);
+    Nvic_setInterruptPriority(Nvic_Irq_Uart4, 128);
 }
 
 static void
 Init_setup_uart(void)
 {
-    Uart_Config uartConfig = { .isTxEnabled = true,
-                               .isRxEnabled = true,
-                               .isTestModeEnabled = false,
-                               .parity = Uart_Parity_None,
-                               .baudRate = UART_BAUDRATE,
-                               .baudRateClkSrc = Uart_BaudRateClk_PeripheralCk,
-                               .baudRateClkFreq = SystemConfig_DefaultPeriphClock };
+    Hal_Uart_Config config = {
+        .id = Uart_Id_4,
+        .parity = Uart_Parity_None,
+        .baudrate = UART_BAUDRATE,
+    };
 
-    Uart_init(Uart_Id_4, &consoleUart);
-    Uart_setConfig(&consoleUart, &uartConfig);
+    Hal_uart_init(&halUart, config);
+
+    // Uart_Config uartConfig = { .isTxEnabled = true,
+    //                            .isRxEnabled = true,
+    //                            .isTestModeEnabled = false,
+    //                            .parity = Uart_Parity_None,
+    //                            .baudRate = UART_BAUDRATE,
+    //                            .baudRateClkSrc = Uart_BaudRateClk_PeripheralCk,
+    //                            .baudRateClkFreq = SystemConfig_DefaultPeriphClock };
+    // // TODO replace it with HAL module
+    // Uart_init(Uart_Id_4, &consoleUart);
+    // Uart_setConfig(&consoleUart, &uartConfig);
 }
 
 static void
