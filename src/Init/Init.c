@@ -31,6 +31,8 @@
 #include "Uart/Uart.h"
 #include "Sdramc/Sdramc.h"
 
+#include "HAL/SAMV71_Uart_serial.h"
+
 #include <assert.h>
 #include <string.h>
 
