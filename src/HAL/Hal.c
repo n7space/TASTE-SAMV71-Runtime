@@ -47,29 +47,20 @@ Hal_uart_init(Hal_Uart* halUart, Hal_Uart_Config halUartConfig)
                            .baudRateClkFreq = SystemConfig_DefaultPeriphClock };
     Uart_setConfig(&halUart->uart, &config);
     ByteFifo_init(&halUart->rxFifo, halUart->rxMemoryBlock, RX_FIFO_SIZE);
-    ByteFifo_init(&halUart->txFifo, halUart->txMemoryBlock, TX_FIFO_SIZE);
 }
 
-bool
+void
 Hal_uart_write(Hal_Uart* halUart, uint8_t* buffer, uint16_t length, const Uart_TxHandler txHandler)
 {
-    for(uint8_t i = 0; i < length; i++) {
-        if(!ByteFifo_push(&halUart->txFifo, buffer[i]))
-            return false;
-    }
+    ByteFifo_initFromBytes(&halUart->txFifo, buffer, length);
     Uart_writeAsync(&halUart->uart, &halUart->txFifo, txHandler);
-
-    return true;
 }
 
-bool
+void
 Hal_uart_read(Hal_Uart* halUart, uint8_t* buffer, uint16_t length, const Uart_RxHandler rxHandler)
 {
-    if(ByteFifo_getCount(&halUart->rxFifo) >= length) {
-        Uart_readAsync(&halUart->uart, &halUart->rxFifo, rxHandler);
-        return true;
-    } else
-        return false;
+    ByteFifo_init(&halUart->rxFifo, buffer, length);
+    Uart_readAsync(&halUart->uart, &halUart->rxFifo, rxHandler);
 }
 
 static inline void

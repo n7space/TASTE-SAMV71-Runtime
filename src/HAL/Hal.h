@@ -1,5 +1,3 @@
-
-
 /**@file
  * This file is part of the TASTE Runtime SAMV71.
  *
@@ -31,10 +29,6 @@
 #define RX_FIFO_SIZE 100
 #endif
 
-#ifndef TX_FIFO_SIZE
-#define TX_FIFO_SIZE 100
-#endif
-
 /// \brief Uart configuration structure
 typedef struct
 {
@@ -49,7 +43,6 @@ typedef struct
     Uart uart;
     uint8_t rxMemoryBlock[RX_FIFO_SIZE];
     ByteFifo rxFifo;
-    uint8_t txMemoryBlock[TX_FIFO_SIZE];
     ByteFifo txFifo;
 } Hal_Uart;
 
@@ -63,17 +56,13 @@ void Hal_uart_init(Hal_Uart* halUart, Hal_Uart_Config halUartConfig);
 /// \param [in] buffer array containing bytes to send
 /// \param [in] length length of array of bytes
 /// \param [in] txHandler handler called after successful array transmission
-/// \retval true if the transmission was successfully initiated.
-/// \retval false if there is not enough place in the tx FIFO.
-bool Hal_uart_write(Hal_Uart* halUart, uint8_t* buffer, uint16_t length, const Uart_TxHandler txHandler);
+void Hal_uart_write(Hal_Uart* halUart, uint8_t* buffer, uint16_t length, const Uart_TxHandler txHandler);
 
 /// \brief Asynchronously receives bytes over uart.
 /// \param [in] halUart Hal_Uart structure contains uart device descriptor and relevant fifos.
 /// \param [in] buffer array where received bytes will be storedx
 /// \param [in] length length of array of bytes
 /// \param [in] rxHandler handler called after successful array reception or after maching character was found
-/// \retval true if the reception was successfully initiated.
-/// \retval false if there is not enough place in the tx FIFO.
-bool Hal_uart_read(Hal_Uart* halUart, uint8_t* buffer, uint16_t length, const Uart_RxHandler rxHandler);
+void Hal_uart_read(Hal_Uart* halUart, uint8_t* buffer, uint16_t length, const Uart_RxHandler rxHandler);
 
 #endif
