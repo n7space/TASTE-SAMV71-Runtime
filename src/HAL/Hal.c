@@ -196,24 +196,24 @@ Hal_uart_init_nvic(Uart_Id id)
     switch(id) {
         case Uart_Id_0:
             Nvic_enableInterrupt(Nvic_Irq_Uart0);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart0, 0);
+            Nvic_setInterruptPriority(Nvic_Irq_Uart0, 5);
             break;
         case Uart_Id_1:
             Nvic_enableInterrupt(Nvic_Irq_Uart1);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart1, 0);
+            Nvic_setInterruptPriority(Nvic_Irq_Uart1, 5);
             break;
         case Uart_Id_2:
             Nvic_enableInterrupt(Nvic_Irq_Uart2);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart2, 0);
+            Nvic_setInterruptPriority(Nvic_Irq_Uart2, 5);
             ;
             break;
         case Uart_Id_3:
             Nvic_enableInterrupt(Nvic_Irq_Uart3);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart3, 0);
+            Nvic_setInterruptPriority(Nvic_Irq_Uart3, 5);
             break;
         case Uart_Id_4:
             Nvic_enableInterrupt(Nvic_Irq_Uart4);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart4, 0);
+            Nvic_setInterruptPriority(Nvic_Irq_Uart4, 5);
             break;
     }
 }
