@@ -34,6 +34,7 @@ Hal_uart_init(Hal_Uart* halUart, Hal_Uart_Config halUartConfig)
 
     Hal_uart_init_pmc(halUartConfig.id);
     Hal_uart_init_pio(halUartConfig.id);
+    Hal_uart_init_nvic(halUartConfig.id);
 
     Uart_startup(&halUart->uart);
     Uart_init(halUartConfig.id, &halUart->uart);
