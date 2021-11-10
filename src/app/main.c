@@ -59,6 +59,14 @@ main()
 {
     Init_setup_hardware();
 
+    Hal_Uart_Config config = {
+        .id = Uart_Id_4,
+        .parity = Uart_Parity_None,
+        .baudrate = UART_BAUDRATE,
+    };
+
+    Hal_uart_init(&halUart, config);
+
     /* Create the queue. */
     xQueue = xQueueCreate(1, sizeof(uint32_t));
 
