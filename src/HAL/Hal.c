@@ -10,20 +10,20 @@
 
 static void Hal_uart_init_pio(Uart_Id id);
 static void Hal_uart_init_uart0_pio(Pio_Port* const port,
-    Pio_Port_Config* const pioConfigTx,
-    Pio_Port_Config* const pioConfigRx);
+                                    Pio_Port_Config* const pioConfigTx,
+                                    Pio_Port_Config* const pioConfigRx);
 static void Hal_uart_init_uart1_pio(Pio_Port* const port,
-    Pio_Port_Config* const pioConfigTx,
-    Pio_Port_Config* const pioConfigRx);
+                                    Pio_Port_Config* const pioConfigTx,
+                                    Pio_Port_Config* const pioConfigRx);
 static void Hal_uart_init_uart2_pio(Pio_Port* const port,
-    Pio_Port_Config* const pioConfigTx,
-    Pio_Port_Config* const pioConfigRx);
+                                    Pio_Port_Config* const pioConfigTx,
+                                    Pio_Port_Config* const pioConfigRx);
 static void Hal_uart_init_uart3_pio(Pio_Port* const port,
-    Pio_Port_Config* const pioConfigTx,
-    Pio_Port_Config* const pioConfigRx);
+                                    Pio_Port_Config* const pioConfigTx,
+                                    Pio_Port_Config* const pioConfigRx);
 static void Hal_uart_init_uart4_pio(Pio_Port* const port,
-    Pio_Port_Config* const pioConfigTx,
-    Pio_Port_Config* const pioConfigRx);
+                                    Pio_Port_Config* const pioConfigTx,
+                                    Pio_Port_Config* const pioConfigRx);
 
 static void Hal_uart_init_pmc(Uart_Id id);
 static void Hal_uart_init_nvic(Uart_Id id);
@@ -86,22 +86,22 @@ Hal_uart_init_pio(Uart_Id id)
     Pio_Port_Config pioConfigRx = pioConfigRx;
     pioConfigRx.pinsConfig.direction = Pio_Direction_Input;
 
-    switch (id) {
-    case Uart_Id_0:
-        Hal_uart_init_uart0_pio(&port, &pioConfigTx, &pioConfigRx);
-        break;
-    case Uart_Id_1:
-        Hal_uart_init_uart1_pio(&port, &pioConfigTx, &pioConfigRx);
-        break;
-    case Uart_Id_2:
-        Hal_uart_init_uart2_pio(&port, &pioConfigTx, &pioConfigRx);
-        break;
-    case Uart_Id_3:
-        Hal_uart_init_uart3_pio(&port, &pioConfigTx, &pioConfigRx);
-        break;
-    case Uart_Id_4:
-        Hal_uart_init_uart4_pio(&port, &pioConfigTx, &pioConfigRx);
-        break;
+    switch(id) {
+        case Uart_Id_0:
+            Hal_uart_init_uart0_pio(&port, &pioConfigTx, &pioConfigRx);
+            break;
+        case Uart_Id_1:
+            Hal_uart_init_uart1_pio(&port, &pioConfigTx, &pioConfigRx);
+            break;
+        case Uart_Id_2:
+            Hal_uart_init_uart2_pio(&port, &pioConfigTx, &pioConfigRx);
+            break;
+        case Uart_Id_3:
+            Hal_uart_init_uart3_pio(&port, &pioConfigTx, &pioConfigRx);
+            break;
+        case Uart_Id_4:
+            Hal_uart_init_uart4_pio(&port, &pioConfigTx, &pioConfigRx);
+            break;
     }
     Pio pio;
     Pio_init(port, &pio);
@@ -168,55 +168,55 @@ Hal_uart_init_uart4_pio(Pio_Port* const port, Pio_Port_Config* const pioConfigTx
 inline static void
 Hal_uart_init_pmc(Uart_Id id)
 {
-    switch (id) {
-    case Uart_Id_0:
-        Pmc_enablePeripheralClk(Pmc_PeripheralId_PioA);
-        Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart0);
-        break;
-    case Uart_Id_1:
-        Pmc_enablePeripheralClk(Pmc_PeripheralId_PioA);
-        Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart1);
-        break;
-    case Uart_Id_2:
-        Pmc_enablePeripheralClk(Pmc_PeripheralId_PioD);
-        Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart2);
-        break;
-    case Uart_Id_3:
-        Pmc_enablePeripheralClk(Pmc_PeripheralId_PioD);
-        Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart3);
-        break;
-    case Uart_Id_4:
-        Pmc_enablePeripheralClk(Pmc_PeripheralId_PioD);
-        Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart4);
-        break;
+    switch(id) {
+        case Uart_Id_0:
+            Pmc_enablePeripheralClk(Pmc_PeripheralId_PioA);
+            Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart0);
+            break;
+        case Uart_Id_1:
+            Pmc_enablePeripheralClk(Pmc_PeripheralId_PioA);
+            Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart1);
+            break;
+        case Uart_Id_2:
+            Pmc_enablePeripheralClk(Pmc_PeripheralId_PioD);
+            Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart2);
+            break;
+        case Uart_Id_3:
+            Pmc_enablePeripheralClk(Pmc_PeripheralId_PioD);
+            Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart3);
+            break;
+        case Uart_Id_4:
+            Pmc_enablePeripheralClk(Pmc_PeripheralId_PioD);
+            Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart4);
+            break;
     }
 }
 
 inline inline static void
 Hal_uart_init_nvic(Uart_Id id)
 {
-    switch (id) {
-    case Uart_Id_0:
-        Nvic_enableInterrupt(Nvic_Irq_Uart0);
-        Nvic_setInterruptPriority(Nvic_Irq_Uart0, 5);
-        break;
-    case Uart_Id_1:
-        Nvic_enableInterrupt(Nvic_Irq_Uart1);
-        Nvic_setInterruptPriority(Nvic_Irq_Uart1, 5);
-        break;
-    case Uart_Id_2:
-        Nvic_enableInterrupt(Nvic_Irq_Uart2);
-        Nvic_setInterruptPriority(Nvic_Irq_Uart2, 5);
-        ;
-        break;
-    case Uart_Id_3:
-        Nvic_enableInterrupt(Nvic_Irq_Uart3);
-        Nvic_setInterruptPriority(Nvic_Irq_Uart3, 5);
-        break;
-    case Uart_Id_4:
-        Nvic_enableInterrupt(Nvic_Irq_Uart4);
-        Nvic_setInterruptPriority(Nvic_Irq_Uart4, 5);
-        break;
+    switch(id) {
+        case Uart_Id_0:
+            Nvic_enableInterrupt(Nvic_Irq_Uart0);
+            Nvic_setInterruptPriority(Nvic_Irq_Uart0, 5);
+            break;
+        case Uart_Id_1:
+            Nvic_enableInterrupt(Nvic_Irq_Uart1);
+            Nvic_setInterruptPriority(Nvic_Irq_Uart1, 5);
+            break;
+        case Uart_Id_2:
+            Nvic_enableInterrupt(Nvic_Irq_Uart2);
+            Nvic_setInterruptPriority(Nvic_Irq_Uart2, 5);
+            ;
+            break;
+        case Uart_Id_3:
+            Nvic_enableInterrupt(Nvic_Irq_Uart3);
+            Nvic_setInterruptPriority(Nvic_Irq_Uart3, 5);
+            break;
+        case Uart_Id_4:
+            Nvic_enableInterrupt(Nvic_Irq_Uart4);
+            Nvic_setInterruptPriority(Nvic_Irq_Uart4, 5);
+            break;
     }
 }
 
@@ -278,8 +278,8 @@ Hal_console_usart_init(void)
     // BaudRate = CLK / ((coarseDiv + fineDiv / 8) * 16)
     uint32_t coarseDiv = SystemConfig_DefaultPeriphClock / (16u * USART_BAUD_RATE);
     uint64_t fineDiv = 8uLL
-        * (((uint64_t)SystemConfig_DefaultPeriphClock * 1000uLL / (16uLL * USART_BAUD_RATE))
-            - (uint64_t)coarseDiv * 1000uLL);
+                       * (((uint64_t)SystemConfig_DefaultPeriphClock * 1000uLL / (16uLL * USART_BAUD_RATE))
+                          - (uint64_t)coarseDiv * 1000uLL);
     fineDiv /= 1000uLL;
 
     *US_BRGR = coarseDiv | ((uint32_t)fineDiv << 16u);
@@ -292,7 +292,7 @@ static void writeByte(const uint8_t data);
 void
 Hal_console_usart_write(const uint8_t* const buffer, const uint16_t count)
 {
-    for (uint32_t i = 0; i < count; i++) {
+    for(uint32_t i = 0; i < count; i++) {
         writeByte(buffer[i]);
     }
 
@@ -303,7 +303,7 @@ inline void
 waitForTransmitterReady(void)
 {
     volatile uint32_t* const US_CSR = (uint32_t*)0x40028014;
-    while (((*US_CSR) & 0x00000002) == 0)
+    while(((*US_CSR) & 0x00000002) == 0)
         asm volatile("nop");
 }
 
