@@ -44,7 +44,7 @@ static void Init_setup_pmc(void);
 static void Init_setup_fpu(void);
 static void Init_setup_pio(void);
 static void Init_setup_nvic(void);
-static void Init_setup_uart(void);
+static void Init_setup_console_usart(void);
 static void Init_setup_sdram(void);
 
 static void Init_setup_sdram_pio(void);
@@ -66,7 +66,7 @@ Init_setup_hardware(void)
     Init_setup_fpu();
     Init_setup_pio();
     Init_setup_nvic();
-    Init_setup_uart();
+    Init_setup_console_usart();
     Init_setup_sdram();
 }
 
@@ -118,15 +118,9 @@ Init_setup_nvic(void)
 }
 
 static void
-Init_setup_uart(void)
+Init_setup_console_usart(void)
 {
-    Hal_Uart_Config config = {
-        .id = Uart_Id_4,
-        .parity = Uart_Parity_None,
-        .baudrate = UART_BAUDRATE,
-    };
-
-    Hal_uart_init(&halUart, config);
+    Hal_console_usart_init();
 }
 
 static void
