@@ -286,19 +286,6 @@ Hal_console_usart_init(void)
     *US_CR = 1u << 6u; // Enable the transmitter
 }
 
-static void waitForTransmitterReady(void);
-static void writeByte(const uint8_t data);
-
-void
-Hal_console_usart_write(const uint8_t* const buffer, const uint16_t count)
-{
-    for(uint32_t i = 0; i < count; i++) {
-        writeByte(buffer[i]);
-    }
-
-    waitForTransmitterReady();
-}
-
 inline void
 waitForTransmitterReady(void)
 {
@@ -314,4 +301,14 @@ writeByte(const uint8_t data)
 
     volatile uint32_t* const US_THR = (uint32_t*)0x4002801C;
     *US_THR = data;
+}
+
+void
+Hal_console_usart_write(const uint8_t* const buffer, const uint16_t count)
+{
+    for(uint32_t i = 0; i < count; i++) {
+        writeByte(buffer[i]);
+    }
+
+    waitForTransmitterReady();
 }
