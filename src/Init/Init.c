@@ -263,3 +263,4 @@ Init_setup_sdram_config(Sdramc* const sdramc)
 
     Sdramc_setConfig(sdramc, &IS42S16100H_SDRAM_CONFIG);
 }
+
