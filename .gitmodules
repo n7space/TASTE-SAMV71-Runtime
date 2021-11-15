@@ -3,7 +3,7 @@
 	url = https://github.com/n7space/cmake-tools
 [submodule "SAMV71-BSP"]
 	path = SAMV71-BSP
-	url = git@github.com:n7space/SAMV71-BSP.git
+	url = https://github.com/n7space/SAMV71-BSP
 [submodule "FreeRTOS-Kernel"]
 	path = FreeRTOS-Kernel
-	url = git@github.com:FreeRTOS/FreeRTOS-Kernel.git
+	url = https://github.com/FreeRTOS/FreeRTOS-Kernel
