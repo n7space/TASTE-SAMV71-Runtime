@@ -1,5 +1,3 @@
-
-
 project(Samv71RuntimeInit VERSION 1.0.0 LANGUAGES C)
 
 add_library(Samv71RuntimeInit STATIC)
