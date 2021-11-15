@@ -177,3 +177,4 @@ uartTxEndCallback(void* arg)
     xSemaphoreGiveFromISR(binarySemaphore, &taskWoken);
     return NULL;
 }
+
