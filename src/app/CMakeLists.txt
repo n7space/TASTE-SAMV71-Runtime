@@ -1,4 +1,3 @@
-
 project(FreeRTOSApp VERSION 1.0.0 LANGUAGES C)
 
 add_executable(FreeRTOSApp)
