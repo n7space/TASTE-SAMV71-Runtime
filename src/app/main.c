@@ -79,7 +79,7 @@ main()
 
     vTaskStartScheduler();
 
-    for (;;) {
+    for(;;) {
         ;
     }
 
@@ -97,7 +97,7 @@ prvTask1(void* pvParameters)
     /* Initialise xNextWakeTime - this only needs to be done once. */
     xNextWakeTime = xTaskGetTickCount();
 
-    for (;;) {
+    for(;;) {
         /** Wait until something arrives in the queue - this task will block
          * for 100ms
          */
@@ -117,7 +117,7 @@ prvTask2(void* pvParameters)
     /* Initialise xNextWakeTime - this only needs to be done once. */
     xNextWakeTime = xTaskGetTickCount();
 
-    for (;;) {
+    for(;;) {
         /** Send to the queue - causing the queue receive task to unblock.
          * Sending operation will not block - it shouldn't need to block
          * as the queue should always  be empty at this point in the code.
@@ -128,7 +128,7 @@ prvTask2(void* pvParameters)
         consoleWrite(&ulValueToSend, 1);
 
         ulValueToSend++;
-        if (ulValueToSend > 'z') {
+        if(ulValueToSend > 'z') {
             ulValueToSend = 'A';
         }
         // Place this task in the blocked state until it is time to run again. */
