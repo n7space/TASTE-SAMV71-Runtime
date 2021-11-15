@@ -17,5 +17,5 @@ target_link_libraries(Samv71RuntimeHal
 
 add_format_target(Samv71RuntimeHal)                
 
-set_target_properties(Samv71RuntimeHal PROPERTIES OUTPUT_NAME "")
+set_target_properties(Samv71RuntimeHal PROPERTIES OUTPUT_NAME "hal")
 add_library(SAMV71::Runtime::Hal ALIAS Samv71RuntimeHal)
