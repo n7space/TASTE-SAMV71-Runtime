@@ -42,8 +42,6 @@ extern Hal_Uart halUart;
 static void Init_setup_watchdog(void);
 static void Init_setup_pmc(void);
 static void Init_setup_fpu(void);
-static void Init_setup_pio(void);
-static void Init_setup_nvic(void);
 static void Init_setup_console_usart(void);
 static void Init_setup_sdram(void);
 
@@ -64,8 +62,6 @@ Init_setup_hardware(void)
     Init_setup_watchdog();
     Init_setup_pmc();
     Init_setup_fpu();
-    Init_setup_pio();
-    Init_setup_nvic();
     Init_setup_console_usart();
     Init_setup_sdram();
 }
@@ -105,16 +101,6 @@ Init_setup_pmc(void)
     Pmc_setConfig(&pmcConfig, &errCode);
 
     assert(errCode == 0);
-}
-
-static void
-Init_setup_pio(void)
-{
-}
-
-static void
-Init_setup_nvic(void)
-{
 }
 
 static void
