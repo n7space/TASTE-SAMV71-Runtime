@@ -5,7 +5,8 @@ target_sources(Samv71RuntimeHal
     PRIVATE     Hal.c
     PUBLIC      Hal.h)
 target_include_directories(Samv71RuntimeHal
-    PRIVATE     ${SAMV71_BSP_DIR}/src)
+    PRIVATE     ${SAMV71_BSP_DIR}/src
+                ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(Samv71RuntimeHal
     PRIVATE     SAMV71::Startup
                 SAMV71::Nvic

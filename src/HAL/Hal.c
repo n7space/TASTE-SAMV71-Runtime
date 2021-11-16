@@ -9,7 +9,19 @@
 #include "Nvic/Nvic.h"
 #include "SystemConfig/SystemConfig.h"
 
+#include "FreeRTOS/FreeRTOSConfig.h"
+
 #define USART_BAUD_RATE 115200
+
+/**
+ * @brief UART priotity definition
+ * System interrupts priorities levels must be smaller than
+ * kernel interrupts levels. The lower the priority value the
+ * higher the priority is. Thus, the UART interrupt priority value
+ * must be equal or greater then configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY.
+ */
+
+#define UART_INTERRUPT_PRIORITY configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY
 
 static void Hal_uart_init_pio(Uart_Id id);
 static void Hal_uart_init_uart0_pio(Pio_Port* const port,
@@ -201,24 +213,24 @@ Hal_uart_init_nvic(Uart_Id id)
     switch(id) {
         case Uart_Id_0:
             Nvic_enableInterrupt(Nvic_Irq_Uart0);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart0, 5);
+            Nvic_setInterruptPriority(Nvic_Irq_Uart0, UART_INTERRUPT_PRIORITY);
             break;
         case Uart_Id_1:
             Nvic_enableInterrupt(Nvic_Irq_Uart1);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart1, 5);
+            Nvic_setInterruptPriority(Nvic_Irq_Uart1, UART_INTERRUPT_PRIORITY);
             break;
         case Uart_Id_2:
             Nvic_enableInterrupt(Nvic_Irq_Uart2);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart2, 5);
+            Nvic_setInterruptPriority(Nvic_Irq_Uart2, UART_INTERRUPT_PRIORITY);
             ;
             break;
         case Uart_Id_3:
             Nvic_enableInterrupt(Nvic_Irq_Uart3);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart3, 5);
+            Nvic_setInterruptPriority(Nvic_Irq_Uart3, UART_INTERRUPT_PRIORITY);
             break;
         case Uart_Id_4:
             Nvic_enableInterrupt(Nvic_Irq_Uart4);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart4, 5);
+            Nvic_setInterruptPriority(Nvic_Irq_Uart4, UART_INTERRUPT_PRIORITY);
             break;
     }
 }
