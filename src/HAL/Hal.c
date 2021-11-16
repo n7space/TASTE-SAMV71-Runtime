@@ -1,5 +1,3 @@
-
-
 #include "Hal.h"
 #include "UsartRegisters.h"
 
