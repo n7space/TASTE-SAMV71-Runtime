@@ -1,4 +1,7 @@
+
+
 #include "Hal.h"
+#include "UsartRegisters.h"
 
 #include "assert.h"
 
@@ -220,18 +223,9 @@ Hal_uart_init_nvic(Uart_Id id)
     }
 }
 
-void
-Hal_console_usart_init(void)
+inline void
+Hal_console_usart_init_pio(void)
 {
-    // cppcheck-suppress misra2012_11_4
-    uint32_t* CCFG_SYSIO = (uint32_t*)0x40088114;
-
-    // Assign the PB4 pin to the PIO controller (TDI is the default function)
-    *CCFG_SYSIO |= 1u << 4u;
-
-    Pmc_enablePeripheralClk(Pmc_PeripheralId_PioB);
-    Pmc_enablePeripheralClk(Pmc_PeripheralId_Usart1);
-
     Pio pioB;
     Pio_init(Pio_Port_B, &pioB);
 
@@ -245,36 +239,50 @@ Hal_console_usart_init(void)
     pinConf.irq = Pio_Irq_None;
 
     Pio_setPinsConfig(&pioB, PIO_PIN_4, &pinConf);
+}
 
-    // cppcheck-suppress misra2012_11_4
-    uint32_t* US_CR = (uint32_t*)0x40028000;
-    // cppcheck-suppress misra2012_11_4
-    uint32_t* US_MR = (uint32_t*)0x40028004;
-    // cppcheck-suppress misra2012_11_4
-    uint32_t* US_BRGR = (uint32_t*)0x40028020;
+inline void
+Hal_console_usart_init_pmc(void)
+{
+    Pmc_enablePeripheralClk(Pmc_PeripheralId_PioB);
+    Pmc_enablePeripheralClk(Pmc_PeripheralId_Usart1);
+}
 
-    *US_MR = 0;         // Clear
-    *US_MR |= 0u << 0;  // USART_MODE NORMAL
-    *US_MR |= 0u << 4;  // USCLKS PCK
-    *US_MR |= 3u << 6;  // CHRL 8BIT
-    *US_MR |= 0u << 8;  // SYNC Asynchronous
-    *US_MR |= 4u << 9;  // PAR No parity
-    *US_MR |= 0u << 12; // NBSTOP 1 stop bit
-    *US_MR |= 0u << 14; // CHMODE Normal mode
-    *US_MR |= 0u << 16; // MSBF MSB
-    *US_MR |= 0u << 17; // MODE9 CHRL defines length
-    *US_MR |= 0u << 18; // CLKO does not drive SCK pin
-    *US_MR |= 0u << 19; // OVER 16x oversampling
-    *US_MR |= 1u << 20; // INACK NSCK is not generated
-    *US_MR |= 0u << 21; // DSNACK don't care - no NACK
-    *US_MR |= 0u << 22; // VAR_SYNC MODSYNC defines sync
-    *US_MR |= 0u << 23; // INVDATA do not invert data
-    *US_MR |= 0u << 24; // MAX_ITERATION don't care - valid in ISO7816 protocol
-    *US_MR |= 0u << 28; // FILTER do not filter incomming data
-    *US_MR |= 0u << 29; // MAN manchester coding disabled
-    *US_MR |= 0u << 30; // MODSYNC don't care - manchester disabled
-    *US_MR |= 1u << 31; // ONEBIT 1 bit start frame delimiterx
+inline void
+Hal_console_usart_init_mode(void)
+{
+    // cppcheck-suppress misra2012_11_4
+    uint32_t* US_MR = (uint32_t*)USART1_MR_ADDRESS;
 
+    *US_MR = 0;                                                      // Clear
+    *US_MR |= USART_MR_MODE_NORMAL << USART_MR_MODE_OFFSET;          // USART_MODE NORMAL
+    *US_MR |= USART_MR_USCLKS_MCK << USART_MR_USCLKS_OFFSET;         // USCLKS PCK
+    *US_MR |= USART_MR_CHRL_8BIT << USART_MR_CHRL_OFFSET;            // CHRL 8BIT
+    *US_MR |= USART_MR_SYNC_ASYNCHRONOUS << USART_MR_SYNC_OFFSET;    // SYNC Asynchronous
+    *US_MR |= USART_MR_PAR_NO << USART_MR_PAR_OFFSET;                // PAR No parity
+    *US_MR |= USART_MR_NBSTOP_1_BIT << USART_MR_NBSTOP_OFFSET;       // NBSTOP 1 stop bit
+    *US_MR |= USART_MR_CHMODE_NORMAL << USART_MR_CHMODE_OFFSET;      // CHMODE Normal mode
+    *US_MR |= USART_MR_MSBF_LSB << USART_MR_MSBF_OFFSET;             // MSBF MSB
+    *US_MR |= USART_MR_MODE9_CHRL << USART_MR_MODE9_OFFSET;          // MODE9 CHRL defines length
+    *US_MR |= USART_MR_CLKO_NO_SCK << USART_MR_CLKO_OFFSET;          // CLKO does not drive SCK pin
+    *US_MR |= USART_MR_OVER_16X << USART_MR_OVER_OFFSET;             // OVER 16x oversampling
+    *US_MR |= USART_MR_INACK_NOT_GEN << USART_MR_INACK_OFFSET;       // INACK NSCK is not generated
+    *US_MR |= USART_MR_DSNACK_NO_NACK << USART_MR_DSNACK_OFFSET;     // DSNACK don't care - no NACK
+    *US_MR |= USART_MR_VAR_SYNC_DISABLE << USART_MR_VAR_SYNC_OFFSET; // VAR_SYNC MODSYNC defines sync
+    *US_MR |= USART_MR_INVDATA_DISABLED << USART_MR_INVDATA_OFFSET;  // INVDATA do not invert data
+    *US_MR |= USART_MR_MAX_ITERATION_DISABLE
+              << USART_MR_MAX_ITERATION_OFFSET;                  // MAX_ITERATION don't care - valid in ISO7816 protocol
+    *US_MR |= USART_MR_FILTER_DISABLE << USART_MR_FILTER_OFFSET; // FILTER do not filter incomming data
+    *US_MR |= USART_MR_MAN_DISABLE << USART_MR_MAN_OFFSET;       // MAN manchester coding disabled
+    *US_MR |= USART_MR_MODSYNC_DISABLE << USART_MR_MODSYNC_OFFSET; // MODSYNC don't care - manchester disabled
+    *US_MR |= USART_MR_ONEBIT_1_BIT << USART_MR_ONEBIT_OFFSET;     // ONEBIT 1 bit start frame delimiterx
+}
+
+inline void
+Hal_console_usart_init_baudrate()
+{
+    // cppcheck-suppress misra2012_11_4
+    uint32_t* US_BRGR = (uint32_t*)USART1_BRGR_ADDRESS;
     // BaudRate = CLK / ((coarseDiv + fineDiv / 8) * 16)
     uint32_t coarseDiv = SystemConfig_DefaultPeriphClock / (16u * USART_BAUD_RATE);
     uint64_t fineDiv = 8uLL
@@ -282,15 +290,43 @@ Hal_console_usart_init(void)
                           - (uint64_t)coarseDiv * 1000uLL);
     fineDiv /= 1000uLL;
 
-    *US_BRGR = coarseDiv | ((uint32_t)fineDiv << 16u);
-    *US_CR = 1u << 6u; // Enable the transmitter
+    *US_BRGR = coarseDiv | ((uint32_t)fineDiv << USART_BRGR_FINE_DIV_OFFSET);
+}
+
+inline void
+Hal_console_usart_init_bus_matrix()
+{
+    // cppcheck-suppress misra2012_11_4
+    uint32_t* CCFG_SYSIO = (uint32_t*)MATRIX_CCFG_SYSIO_ADDR;
+    // Assign the PB4 pin to the PIO controller (TDI is the default function)
+    *CCFG_SYSIO |= MATRIX_CCFG_SYSIO_PB4_SELECTED << MATRIX_CCFG_SYSIO_SYSIO4_OFFSET;
+}
+
+inline void
+Hal_console_usart_init_tx_enable()
+{
+    // cppcheck-suppress misra2012_11_4
+    uint32_t* US_CR = (uint32_t*)USART1_CR_ADDRESS;
+    *US_CR = USART_CR_TXEN_ENABLE << USART_CR_TXEN_OFFSET; // Enable the transmitter
+}
+
+void
+Hal_console_usart_init(void)
+{
+    Hal_console_usart_init_bus_matrix();
+    Hal_console_usart_init_pmc();
+    Hal_console_usart_init_pio();
+
+    Hal_console_usart_init_mode();
+    Hal_console_usart_init_baudrate();
+    Hal_console_usart_init_tx_enable();
 }
 
 inline void
 waitForTransmitterReady(void)
 {
-    volatile uint32_t* const US_CSR = (uint32_t*)0x40028014;
-    while(((*US_CSR) & 0x00000002) == 0)
+    volatile uint32_t* const US_CSR = (uint32_t*)USART1_CSR_ADDRESS;
+    while(((*US_CSR) & USART_CSR_TXRDY_MASK) == 0)
         asm volatile("nop");
 }
 
@@ -299,7 +335,7 @@ writeByte(const uint8_t data)
 {
     waitForTransmitterReady();
 
-    volatile uint32_t* const US_THR = (uint32_t*)0x4002801C;
+    volatile uint32_t* const US_THR = (uint32_t*)USART1_THR_ADDRESS;
     *US_THR = data;
 }
 
