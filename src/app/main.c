@@ -1,9 +1,11 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
+#include "semphr.h"
 
 #include <Uart/Uart.h>
 #include <Init/Init.h>
+#include <HAL/Hal.h>
 
 #include <assert.h>
 #include <stdlib.h>
@@ -18,6 +20,7 @@ void vApplicationIdleHook();
 void vApplicationTickHook();
 
 void consoleWrite(uint8_t* buffer, uint16_t size);
+ByteFifo* uartTxEndCallback(void* arg);
 
 #define UART_BAUDRATE 38400
 #define UART_TIMEOUT 100000u
@@ -32,18 +35,44 @@ to ticks using the portTICK_PERIOD_MS constant. */
 #define TASK1_DELAY (100 / portTICK_PERIOD_MS)
 #define TASK2_DELAY (500 / portTICK_PERIOD_MS)
 
-Uart consoleUart;
+Hal_Uart halUart;
+
+Uart_TxHandler txHandler = {
+    .callback = uartTxEndCallback,
+    .arg = &halUart,
+};
+
+static SemaphoreHandle_t binarySemaphore;
+
 /* The queue used by both tasks. */
 static QueueHandle_t xQueue = NULL;
 uint8_t buffer[25];
+
+void
+UART4_Handler(void)
+{
+    Uart_handleInterrupt(&halUart.uart);
+}
 
 int
 main()
 {
     Init_setup_hardware();
 
+    Hal_Uart_Config config = {
+        .id = Uart_Id_4,
+        .parity = Uart_Parity_None,
+        .baudrate = UART_BAUDRATE,
+    };
+
+    Hal_uart_init(&halUart, config);
+
     /* Create the queue. */
     xQueue = xQueueCreate(1, sizeof(uint32_t));
+
+    /// Create binary semaphore
+    binarySemaphore = xSemaphoreCreateBinary();
+    xSemaphoreGive(binarySemaphore);
 
     xTaskCreate(prvTask2, "Task2", configMINIMAL_STACK_SIZE, NULL, TASK2_PIORITY, NULL);
     xTaskCreate(prvTask1, "Task1", configMINIMAL_STACK_SIZE, NULL, TASK1_PIORITY, NULL);
@@ -137,7 +166,14 @@ vApplicationTickHook()
 void
 consoleWrite(uint8_t* buffer, uint16_t size)
 {
-    for(uint16_t i = 0; i < size; i++) {
-        Uart_write(&consoleUart, buffer[i], UART_TIMEOUT, NULL);
-    }
+    xSemaphoreTake(binarySemaphore, portMAX_DELAY);
+    Hal_uart_write(&halUart, buffer, size, txHandler);
+}
+
+ByteFifo*
+uartTxEndCallback(void* arg)
+{
+    BaseType_t taskWoken;
+    xSemaphoreGiveFromISR(binarySemaphore, &taskWoken);
+    return NULL;
 }

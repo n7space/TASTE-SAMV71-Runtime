@@ -1,0 +1,22 @@
+project(Samv71RuntimeHal VERSION 1.0.0 LANGUAGES C)
+
+add_library(Samv71RuntimeHal STATIC)
+target_sources(Samv71RuntimeHal
+    PRIVATE     Hal.c
+    PUBLIC      Hal.h)
+target_include_directories(Samv71RuntimeHal
+    PRIVATE     ${SAMV71_BSP_DIR}/src
+                ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(Samv71RuntimeHal
+    PRIVATE     SAMV71::Startup
+                SAMV71::Nvic
+                SAMV71::Pio
+                SAMV71::Pmc
+                SAMV71::Uart
+                SAMV71::Utils
+                )
+
+add_format_target(Samv71RuntimeHal)                
+
+set_target_properties(Samv71RuntimeHal PROPERTIES OUTPUT_NAME "hal")
+add_library(SAMV71::Runtime::Hal ALIAS Samv71RuntimeHal)

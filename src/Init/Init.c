@@ -31,17 +31,18 @@
 #include "Uart/Uart.h"
 #include "Sdramc/Sdramc.h"
 
+#include "HAL/Hal.h"
+
 #include <assert.h>
 #include <string.h>
 
 extern Uart consoleUart;
+extern Hal_Uart halUart;
 
 static void Init_setup_watchdog(void);
 static void Init_setup_pmc(void);
 static void Init_setup_fpu(void);
-static void Init_setup_pio(void);
-static void Init_setup_nvic(void);
-static void Init_setup_uart(void);
+static void Init_setup_console_usart(void);
 static void Init_setup_sdram(void);
 
 static void Init_setup_sdram_pio(void);
@@ -61,9 +62,7 @@ Init_setup_hardware(void)
     Init_setup_watchdog();
     Init_setup_pmc();
     Init_setup_fpu();
-    Init_setup_pio();
-    Init_setup_nvic();
-    Init_setup_uart();
+    Init_setup_console_usart();
     Init_setup_sdram();
 }
 
@@ -105,56 +104,9 @@ Init_setup_pmc(void)
 }
 
 static void
-Init_setup_pio(void)
+Init_setup_console_usart(void)
 {
-    Pmc_enablePeripheralClk(Pmc_PeripheralId_PioD);
-    Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart4);
-
-    Pio pio;
-    Pio_init(Pio_Port_D, &pio);
-
-    Pio_Port_Config pioConfig = {
-        .pinsConfig = {
-            .pull = Pio_Pull_Up,
-            .filter = Pio_Filter_None,
-            .isMultiDriveEnabled = false,
-            .isSchmittTriggerDisabled = false,
-            .irq = Pio_Irq_None,
-        },
-        .debounceFilterDiv = 0
-    };
-
-    pioConfig.pins = PIO_PIN_18;
-    pioConfig.pinsConfig.control = Pio_Control_PeripheralC;
-    pioConfig.pinsConfig.direction = Pio_Direction_Input;
-    Pio_setPortConfig(&pio, &pioConfig);
-
-    pioConfig.pins = PIO_PIN_19;
-    pioConfig.pinsConfig.control = Pio_Control_PeripheralC;
-    pioConfig.pinsConfig.direction = Pio_Direction_Output;
-    Pio_setPortConfig(&pio, &pioConfig);
-}
-
-static void
-Init_setup_nvic(void)
-{
-    Nvic_enableInterrupt(Nvic_Irq_Uart4);
-    Nvic_setInterruptPriority(Nvic_Irq_Uart4, 0);
-}
-
-static void
-Init_setup_uart(void)
-{
-    Uart_Config uartConfig = { .isTxEnabled = true,
-                               .isRxEnabled = true,
-                               .isTestModeEnabled = false,
-                               .parity = Uart_Parity_None,
-                               .baudRate = UART_BAUDRATE,
-                               .baudRateClkSrc = Uart_BaudRateClk_PeripheralCk,
-                               .baudRateClkFreq = SystemConfig_DefaultPeriphClock };
-    // TODO replace it with HAL module
-    Uart_init(Uart_Id_4, &consoleUart);
-    Uart_setConfig(&consoleUart, &uartConfig);
+    Hal_console_usart_init();
 }
 
 static void
@@ -297,4 +249,3 @@ Init_setup_sdram_config(Sdramc* const sdramc)
 
     Sdramc_setConfig(sdramc, &IS42S16100H_SDRAM_CONFIG);
 }
-
