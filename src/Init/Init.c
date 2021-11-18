@@ -31,7 +31,7 @@
 #include "Uart/Uart.h"
 #include "Sdramc/Sdramc.h"
 
-#include "HAL/Hal.h"
+#include "Hal/Hal.h"
 
 #include <assert.h>
 #include <string.h>

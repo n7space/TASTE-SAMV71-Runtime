@@ -5,7 +5,7 @@
 
 #include <Uart/Uart.h>
 #include <Init/Init.h>
-#include <HAL/Hal.h>
+#include <Hal/Hal.h>
 
 #include <assert.h>
 #include <stdlib.h>
