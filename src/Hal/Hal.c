@@ -62,7 +62,6 @@ Hal_uart_init(Hal_Uart* halUart, Hal_Uart_Config halUartConfig)
                            .baudRateClkSrc = Uart_BaudRateClk_PeripheralCk,
                            .baudRateClkFreq = SystemConfig_DefaultPeriphClock };
     Uart_setConfig(&halUart->uart, &config);
-    ByteFifo_init(&halUart->rxFifo, halUart->rxMemoryBlock, RX_FIFO_SIZE);
 }
 
 void

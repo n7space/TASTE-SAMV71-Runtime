@@ -1,6 +1,6 @@
 project(FreeRTOS VERSION 1.0.0 LANGUAGES C)
 
-set(FREERTOS_DIR ${CMAKE_SOURCE_DIR}/FreeRTOS-Kernel)
+set(FREERTOS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../FreeRTOS-Kernel)
 
 add_library(Samv71FreeRtos STATIC)
 target_sources(Samv71FreeRtos

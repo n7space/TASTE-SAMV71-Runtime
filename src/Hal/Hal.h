@@ -25,10 +25,6 @@
 
 #include "Uart/Uart.h"
 
-#ifndef RX_FIFO_SIZE
-#define RX_FIFO_SIZE 100
-#endif
-
 /// \brief Uart configuration structure
 typedef struct
 {
@@ -41,7 +37,6 @@ typedef struct
 typedef struct
 {
     Uart uart;
-    uint8_t rxMemoryBlock[RX_FIFO_SIZE];
     ByteFifo rxFifo;
     ByteFifo txFifo;
 } Hal_Uart;

@@ -6,14 +6,14 @@ target_sources(Samv71RuntimeHal
     PUBLIC      Hal.h)
 target_include_directories(Samv71RuntimeHal
     PRIVATE     ${SAMV71_BSP_DIR}/src
-                ${CMAKE_SOURCE_DIR}/src)
+                ${CMAKE_CURRENT_SOURCE_DIR}/..)
 target_link_libraries(Samv71RuntimeHal
     PRIVATE     SAMV71::Startup
                 SAMV71::Nvic
                 SAMV71::Pio
                 SAMV71::Pmc
-                SAMV71::Uart
                 SAMV71::Utils
+    PUBLIC      SAMV71::Uart
                 )
 
 add_format_target(Samv71RuntimeHal)                
