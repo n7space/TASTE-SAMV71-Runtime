@@ -6,7 +6,9 @@ set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 set(CMAKE_C_COMPILER arm-none-eabi-gcc)
 set(CMAKE_CXX_COMPILER arm-none-eabi-g++)
 
-set(SAMV71_BSP_DIR ${CMAKE_SOURCE_DIR}/SAMV71-BSP)
+if(${SAMV71_BSP_DIR})
+message(FATAL_ERROR "SAMV71_BSP_DIR not defined")
+endif()
 
 set(CMAKE_C_FLAGS
 "-mcpu=cortex-m7 \
