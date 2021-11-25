@@ -25,27 +25,16 @@
 #include <FreeRTOS.h>
 #include <semphr.h>
 
-static SemaphoreHandle_t broker_lock = { NULL };
-
-static inline void
-Broker_create_and_init_lock()
-{
-    if(broker_lock == NULL) {
-        broker_lock = xSemaphoreCreateBinary();
-        xSemaphoreGive(broker_lock);
-    }
-}
+extern SemaphoreHandle_t broker_lock;
 
 void
 Broker_acquire_lock()
 {
-    Broker_create_and_init_lock();
     xSemaphoreTake(broker_lock, portMAX_DELAY);
 }
 
 void
 Broker_release_lock()
 {
-    Broker_create_and_init_lock();
     xSemaphoreGive(broker_lock);
 }
