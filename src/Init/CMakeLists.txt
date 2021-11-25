@@ -15,7 +15,8 @@ target_link_libraries(Samv71RuntimeInit
                 SAMV71::Uart
                 SAMV71::Wdt
                 SAMV71::Sdramc
-                SAMV71::FreeRTOS)
+                SAMV71::FreeRTOS
+                SAMV71::Runtime::Hal)
 
 add_format_target(Samv71RuntimeInit)                
 
