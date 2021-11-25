@@ -5,18 +5,17 @@ target_sources(Samv71RuntimeHal
     PRIVATE     Hal.c
     PUBLIC      Hal.h)
 target_include_directories(Samv71RuntimeHal
-    PRIVATE     ${SAMV71_BSP_DIR}/src
-                ${CMAKE_SOURCE_DIR}/src)
+    PRIVATE     ${CMAKE_CURRENT_SOURCE_DIR}/..)
 target_link_libraries(Samv71RuntimeHal
     PRIVATE     SAMV71::Startup
                 SAMV71::Nvic
                 SAMV71::Pio
                 SAMV71::Pmc
-                SAMV71::Uart
                 SAMV71::Utils
-                )
+                SAMV71::FreeRTOS
+    PUBLIC      SAMV71::Uart)
 
-add_format_target(Samv71RuntimeHal)                
+add_format_target(Samv71RuntimeHal)
 
 set_target_properties(Samv71RuntimeHal PROPERTIES OUTPUT_NAME "hal")
 add_library(SAMV71::Runtime::Hal ALIAS Samv71RuntimeHal)

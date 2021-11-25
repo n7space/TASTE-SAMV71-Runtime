@@ -5,8 +5,7 @@ target_sources(Samv71RuntimeInit
     PRIVATE     Init.c
     PUBLIC      Init.h)
 target_include_directories(Samv71RuntimeInit
-    PRIVATE     ${SAMV71_BSP_DIR}/src
-                ${CMAKE_SOURCE_DIR}/src)
+    PRIVATE     ${CMAKE_CURRENT_SOURCE_DIR}/..)
 target_link_libraries(Samv71RuntimeInit
     PRIVATE     SAMV71::Startup
                 SAMV71::Fpu

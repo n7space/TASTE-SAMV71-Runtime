@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
+
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/toolchains/samv71.cmake)
+
 project(Samv71FreeRtos VERSION 1.0.0 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 99)
@@ -23,5 +25,6 @@ target_compile_definitions(bsp_build_options
     INTERFACE   USE_UART_IO
                 LOW_LEVEL_IO_UART_ID=4)
 
+add_subdirectory(FreeRTOS)
 add_subdirectory(SAMV71-BSP)
 add_subdirectory(src)

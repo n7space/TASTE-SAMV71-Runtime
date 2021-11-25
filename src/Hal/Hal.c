@@ -7,7 +7,7 @@
 #include "Nvic/Nvic.h"
 #include "SystemConfig/SystemConfig.h"
 
-#include "FreeRTOS/FreeRTOSConfig.h"
+#include "FreeRTOSConfig.h"
 
 #define USART_BAUD_RATE 115200
 
@@ -42,7 +42,7 @@ static void Hal_uart_init_pmc(Uart_Id id);
 static void Hal_uart_init_nvic(Uart_Id id);
 
 void
-Hal_uart_init(Hal_Uart* halUart, Hal_Uart_Config halUartConfig)
+Hal_uart_init(Hal_Uart* const halUart, Hal_Uart_Config halUartConfig)
 {
     assert(halUartConfig.id <= Uart_Id_4);
     assert((halUartConfig.parity <= Uart_Parity_Odd) || (halUartConfig.parity == Uart_Parity_None));
@@ -62,18 +62,17 @@ Hal_uart_init(Hal_Uart* halUart, Hal_Uart_Config halUartConfig)
                            .baudRateClkSrc = Uart_BaudRateClk_PeripheralCk,
                            .baudRateClkFreq = SystemConfig_DefaultPeriphClock };
     Uart_setConfig(&halUart->uart, &config);
-    ByteFifo_init(&halUart->rxFifo, halUart->rxMemoryBlock, RX_FIFO_SIZE);
 }
 
 void
-Hal_uart_write(Hal_Uart* halUart, uint8_t* buffer, uint16_t length, const Uart_TxHandler txHandler)
+Hal_uart_write(Hal_Uart* const halUart, uint8_t* const buffer, const uint16_t length, const Uart_TxHandler txHandler)
 {
     ByteFifo_initFromBytes(&halUart->txFifo, buffer, length);
     Uart_writeAsync(&halUart->uart, &halUart->txFifo, txHandler);
 }
 
 void
-Hal_uart_read(Hal_Uart* halUart, uint8_t* buffer, uint16_t length, const Uart_RxHandler rxHandler)
+Hal_uart_read(Hal_Uart* const halUart, uint8_t* const buffer, const uint16_t length, const Uart_RxHandler rxHandler)
 {
     ByteFifo_init(&halUart->rxFifo, buffer, length);
     Uart_readAsync(&halUart->uart, &halUart->rxFifo, rxHandler);

@@ -1,4 +1,3 @@
-
 /**@file
  * This file is part of the TASTE Runtime SAMV71.
  *
