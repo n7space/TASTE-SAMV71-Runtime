@@ -38,6 +38,8 @@
 #include <assert.h>
 #include <string.h>
 
+SemaphoreHandle_t broker_lock;
+
 #define UART_BAUDRATE 38400
 
 inline static void
@@ -224,6 +226,13 @@ Init_setup_sdram(void)
     Sdramc_performInitializationSequence(&sdramc, SystemConfig_DefaultCoreClock);
 }
 
+inline static void
+Init_setup_broker_lock()
+{
+    broker_lock = xSemaphoreCreateBinary();
+    xSemaphoreGive(broker_lock);
+}
+
 void
 Init_setup_hardware(void)
 {
@@ -232,4 +241,5 @@ Init_setup_hardware(void)
     Init_setup_fpu();
     Init_setup_console_usart();
     Init_setup_sdram();
+    Init_setup_broker_lock();
 }
