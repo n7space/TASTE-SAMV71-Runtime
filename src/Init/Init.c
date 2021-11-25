@@ -21,6 +21,7 @@
  */
 
 #include "Init.h"
+#include "Hal/Hal.h"
 
 #include "Wdt/Wdt.h"
 #include "Fpu/Fpu.h"
@@ -31,42 +32,15 @@
 #include "Uart/Uart.h"
 #include "Sdramc/Sdramc.h"
 
-#include "Hal/Hal.h"
+#include "FreeRTOS.h"
+#include "semphr.h"
 
 #include <assert.h>
 #include <string.h>
 
-extern Uart consoleUart;
-extern Hal_Uart halUart;
-
-static void Init_setup_watchdog(void);
-static void Init_setup_pmc(void);
-static void Init_setup_fpu(void);
-static void Init_setup_console_usart(void);
-static void Init_setup_sdram(void);
-
-static void Init_setup_sdram_pio(void);
-static void Init_setup_sdram_pio_portA(void);
-static void Init_setup_sdram_pio_portC(void);
-static void Init_setup_sdram_pio_portD(void);
-static void Init_setup_sdram_pio_portE(void);
-static void Init_setup_sdram_pio_pin(Pio* const pio, const uint32_t pin, const Pio_Control control);
-static void Init_setup_sdram_pmc(void);
-static void Init_setup_sdram_config(Sdramc* const sdramc);
-
 #define UART_BAUDRATE 38400
 
-void
-Init_setup_hardware(void)
-{
-    Init_setup_watchdog();
-    Init_setup_pmc();
-    Init_setup_fpu();
-    Init_setup_console_usart();
-    Init_setup_sdram();
-}
-
-static void
+inline static void
 Init_setup_watchdog(void)
 {
     const Wdt_Config wdtConfig = {
@@ -84,7 +58,7 @@ Init_setup_watchdog(void)
     Wdt_setConfig(&wdt, &wdtConfig);
 }
 
-static void
+inline static void
 Init_setup_fpu(void)
 {
     Fpu fpu;
@@ -92,7 +66,7 @@ Init_setup_fpu(void)
     Fpu_startup(&fpu);
 }
 
-static void
+inline static void
 Init_setup_pmc(void)
 {
     int errCode = 0;
@@ -103,31 +77,20 @@ Init_setup_pmc(void)
     assert(errCode == 0);
 }
 
-static void
+inline static void
 Init_setup_console_usart(void)
 {
     Hal_console_usart_init();
 }
 
-static void
-Init_setup_sdram(void)
-{
-    Sdramc sdramc;
-    Init_setup_sdram_pio();
-    Init_setup_sdram_pmc();
-    Sdramc_init(&sdramc);
-    Sdramc_startup(&sdramc);
-    Init_setup_sdram_config(&sdramc);
-    Sdramc_performInitializationSequence(&sdramc, SystemConfig_DefaultCoreClock);
-}
-
 static inline void
-Init_setup_sdram_pio(void)
+Init_setup_sdram_pio_pin(Pio* const pio, const uint32_t pin, const Pio_Control control)
 {
-    Init_setup_sdram_pio_portA();
-    Init_setup_sdram_pio_portC();
-    Init_setup_sdram_pio_portD();
-    Init_setup_sdram_pio_portE();
+    Pio_Pin_Config config;
+    memset(&config, 0, sizeof(Pio_Pin_Config));
+    config.control = control;
+    config.pull = Pio_Pull_Up;
+    Pio_setPinsConfig(pio, pin, &config);
 }
 
 static inline void
@@ -203,13 +166,12 @@ Init_setup_sdram_pio_portE(void)
 }
 
 static inline void
-Init_setup_sdram_pio_pin(Pio* const pio, const uint32_t pin, const Pio_Control control)
+Init_setup_sdram_pio(void)
 {
-    Pio_Pin_Config config;
-    memset(&config, 0, sizeof(Pio_Pin_Config));
-    config.control = control;
-    config.pull = Pio_Pull_Up;
-    Pio_setPinsConfig(pio, pin, &config);
+    Init_setup_sdram_pio_portA();
+    Init_setup_sdram_pio_portC();
+    Init_setup_sdram_pio_portD();
+    Init_setup_sdram_pio_portE();
 }
 
 static inline void
@@ -248,4 +210,26 @@ Init_setup_sdram_config(Sdramc* const sdramc)
     };
 
     Sdramc_setConfig(sdramc, &IS42S16100H_SDRAM_CONFIG);
+}
+
+inline static void
+Init_setup_sdram(void)
+{
+    Sdramc sdramc;
+    Init_setup_sdram_pio();
+    Init_setup_sdram_pmc();
+    Sdramc_init(&sdramc);
+    Sdramc_startup(&sdramc);
+    Init_setup_sdram_config(&sdramc);
+    Sdramc_performInitializationSequence(&sdramc, SystemConfig_DefaultCoreClock);
+}
+
+void
+Init_setup_hardware(void)
+{
+    Init_setup_watchdog();
+    Init_setup_pmc();
+    Init_setup_fpu();
+    Init_setup_console_usart();
+    Init_setup_sdram();
 }
