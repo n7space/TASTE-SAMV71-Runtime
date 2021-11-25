@@ -23,5 +23,6 @@ target_compile_definitions(bsp_build_options
     INTERFACE   USE_UART_IO
                 LOW_LEVEL_IO_UART_ID=4)
 
+add_subdirectory(FreeRTOS)
 add_subdirectory(SAMV71-BSP)
 add_subdirectory(src)

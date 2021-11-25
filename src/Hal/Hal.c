@@ -7,7 +7,7 @@
 #include "Nvic/Nvic.h"
 #include "SystemConfig/SystemConfig.h"
 
-#include "FreeRTOS/FreeRTOSConfig.h"
+#include "FreeRTOSConfig.h"
 
 #define USART_BAUD_RATE 115200
 
