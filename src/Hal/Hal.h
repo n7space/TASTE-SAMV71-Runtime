@@ -44,21 +44,27 @@ typedef struct
 /// \brief Starts up, initializes and configures Uart and coresponding periferals
 /// \param [in] halUart Hal_Uart structure contains uart device descriptor and relevant fifos.
 /// \param [in] halUartConfig configuration structure
-void Hal_uart_init(Hal_Uart* halUart, Hal_Uart_Config halUartConfig);
+void Hal_uart_init(Hal_Uart* const halUart, Hal_Uart_Config halUartConfig);
 
 /// \brief Asynchronously sends bytes over uart.
 /// \param [in] halUart Hal_Uart structure contains uart device descriptor and relevant fifos.
 /// \param [in] buffer array containing bytes to send
 /// \param [in] length length of array of bytes
 /// \param [in] txHandler handler called after successful array transmission
-void Hal_uart_write(Hal_Uart* halUart, uint8_t* buffer, uint16_t length, const Uart_TxHandler txHandler);
+void Hal_uart_write(Hal_Uart* const halUart,
+                    uint8_t* const buffer,
+                    const uint16_t length,
+                    const Uart_TxHandler txHandler);
 
 /// \brief Asynchronously receives bytes over uart.
 /// \param [in] halUart Hal_Uart structure contains uart device descriptor and relevant fifos.
 /// \param [in] buffer array where received bytes will be storedx
 /// \param [in] length length of array of bytes
 /// \param [in] rxHandler handler called after successful array reception or after maching character was found
-void Hal_uart_read(Hal_Uart* halUart, uint8_t* buffer, uint16_t length, const Uart_RxHandler rxHandler);
+void Hal_uart_read(Hal_Uart* const halUart,
+                   uint8_t* const buffer,
+                   const uint16_t length,
+                   const Uart_RxHandler rxHandler);
 
 /// \brief Initializes USART 1, which is connected to virtual com port gateway
 /**
