@@ -10,7 +10,7 @@
  */
 
 #include "hwas.h"
-//#include <stdio.h>
+#include "Nvic/Nvic.h"
 
 void
 hwas_startup(void)
@@ -23,13 +23,13 @@ void
 hwas_PI_InterruptManagement_DisableInterrupt_Pi(const asn1SccInterruptNumber* IN_interrupt)
 
 {
-    // Write your code here
+    Nvic_disableInterrupt((Nvic_Irq)IN_interrupt);
 }
 void
 hwas_PI_InterruptManagement_EnableInterrupt_Pi(const asn1SccInterruptNumber* IN_interrupt)
 
 {
-    // Write your code here
+    Nvic_enableInterrupt((Nvic_Irq)IN_interrupt);
 }
 void
 hwas_PI_InterruptSubscriptionManagement_SubscribeToInterrupt_Pi(const asn1SccInterruptNumber* IN_interrupt)

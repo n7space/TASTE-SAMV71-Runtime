@@ -8,7 +8,7 @@ target_include_directories(Samv71RuntimeHwas
     PRIVATE     ${CMAKE_SOURCE_DIR}/src
     PUBLIC      ${CMAKE_CURRENT_SOURCE_DIR}/dataview)
 target_link_libraries(Samv71RuntimeHwas
-    PRIVATE     )
+    PRIVATE     SAMV71::Nvic)
 
 add_format_target(Samv71RuntimeHwas)                
 
