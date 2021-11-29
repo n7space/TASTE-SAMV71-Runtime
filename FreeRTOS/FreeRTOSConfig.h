@@ -69,8 +69,13 @@
 #define configAPPLICATION_ALLOCATED_HEAP        1   
 #endif
 
-__attribute__((section(".sdramMemorySection")))
-static uint8_t ucHeap[configTOTAL_HEAP_SIZE];
+/**
+ * @brief FreeRtos heap declaration
+ * First attribute puts heap into sram
+ * Second suppresses warnings
+ */
+__attribute__((section(".sdramMemorySection")))__attribute__((unused))
+static uint8_t ucHeap[configTOTAL_HEAP_SIZE] = { 0 };
 
 /* The full demo always has tasks to run so the tick will never be turned off.
 The blinky demo will use the default tickless idle implementation to turn the
