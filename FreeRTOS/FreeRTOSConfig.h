@@ -74,7 +74,7 @@
  * First attribute puts heap into sram
  * Second suppresses warnings
  */
-__attribute__((section(".sdramMemorySection")))__attribute__((unused))
+__attribute__((section(".sdramMemorySection"), unused))
 static uint8_t ucHeap[configTOTAL_HEAP_SIZE] = { 0 };
 
 /* The full demo always has tasks to run so the tick will never be turned off.
