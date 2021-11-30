@@ -32,8 +32,10 @@ extern "C"
     void hwas_PI_InterruptSubscriptionManagement_SubscribeToInterrupt_Pi(const asn1SccInterruptNumber*);
     void hwas_PI_RawMemoryAccess_ReadBuffer_Pi(const asn1SccSourceAddress*, asn1SccByteBuffer*);
     void hwas_PI_RawMemoryAccess_ReadWord_Pi(const asn1SccSourceAddress*, const asn1SccWordMask*, asn1SccWord*);
-    void hwas_PI_RawMemoryAccess_WriteBuffer_Pi(asn1SccDestinationAddress*, const asn1SccByteBuffer*);
-    void hwas_PI_RawMemoryAccess_WriteWord_Pi(asn1SccDestinationAddress*, const asn1SccWordMask*, const asn1SccWord*);
+    void hwas_PI_RawMemoryAccess_WriteBuffer_Pi(const asn1SccDestinationAddress*, const asn1SccByteBuffer*);
+    void hwas_PI_RawMemoryAccess_WriteWord_Pi(const asn1SccDestinationAddress*,
+                                              const asn1SccWordMask*,
+                                              const asn1SccWord*);
 
     /* Required interfaces */
     extern void hwas_RI_InterruptSubscription_Interrupt_Ri(const asn1SccInterrupt_Type*);
