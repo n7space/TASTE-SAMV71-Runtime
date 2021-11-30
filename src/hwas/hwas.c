@@ -159,13 +159,13 @@ hwas_startup(void)
 void
 hwas_PI_InterruptManagement_DisableInterrupt_Pi(const asn1SccInterruptNumber* IN_interrupt)
 {
-    Nvic_disableInterrupt((Nvic_Irq)IN_interrupt);
+    Nvic_disableInterrupt((Nvic_Irq)*IN_interrupt);
 }
 
 void
 hwas_PI_InterruptManagement_EnableInterrupt_Pi(const asn1SccInterruptNumber* IN_interrupt)
 {
-    Nvic_enableInterrupt((Nvic_Irq)IN_interrupt);
+    Nvic_enableInterrupt((Nvic_Irq)*IN_interrupt);
 }
 
 void
