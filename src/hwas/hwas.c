@@ -101,7 +101,7 @@ void
 TWIHS0_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Twihs0]) {
-        asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Twihs2 };
+        asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Twihs0 };
         hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
     }
 }
@@ -128,6 +128,10 @@ void
 MCAN0_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Mcan0_Irq0]) {
+        asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Mcan0_Irq0 };
+        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+    }
+    if(interruptSubscribe[Nvic_Irq_Mcan0_Irq1]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Mcan0_Irq1 };
         hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
     }
@@ -136,8 +140,12 @@ MCAN0_Handler(void)
 void
 MCAN1_Handler(void)
 {
-    if(interruptSubscribe[Nvic_Irq_Mcan0_Irq1]) {
+    if(interruptSubscribe[Nvic_Irq_Mcan1_Irq0]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Mcan1_Irq0 };
+        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+    }
+    if(interruptSubscribe[Nvic_Irq_Mcan1_Irq1]) {
+        asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Mcan1_Irq1 };
         hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
     }
 }
