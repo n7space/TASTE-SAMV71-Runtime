@@ -77,7 +77,7 @@ void Hal_console_usart_init(void);
 
 /// \brief Synchroniously writes bytes over USART1
 /// \param [in] buffer array containing bytes to send
-/// \param [in] length length of array of bytes
+/// \param [in] count length of array of bytes
 void Hal_console_usart_write(const uint8_t* const buffer, const uint16_t count);
 
 #endif
