@@ -15,8 +15,8 @@ the stack and so not exists after this function exits. */
     static StaticTask_t xTimerTaskTCB;
     static StackType_t uxTimerTaskStack[configTIMER_TASK_STACK_DEPTH];
 
-        /* Pass out a pointer to the StaticTask_t structure in which the Timer
-        task's state will be stored. */
+    /* Pass out a pointer to the StaticTask_t structure in which the Timer
+    task's state will be stored. */
     *ppxTimerTaskTCBBuffer = &xTimerTaskTCB;
 
     /* Pass out the array that will be used as the Timer task's stack. */
