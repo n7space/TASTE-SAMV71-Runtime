@@ -14,7 +14,7 @@
 
 #include <string.h>
 
-static bool interruptSubscribe[Nvic_InterruptCount] = { 0 };
+static volatile bool interruptSubscribe[Nvic_InterruptCount] = { 0 };
 
 void
 PIOA_Handler(void)
@@ -145,7 +145,7 @@ MCAN1_Handler(void)
 void
 hwas_startup(void)
 {
-    memset(interruptSubscribe, 0, Nvic_InterruptCount);
+    memset((void*)interruptSubscribe, 0, Nvic_InterruptCount);
 }
 
 void
