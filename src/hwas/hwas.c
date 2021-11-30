@@ -177,7 +177,7 @@ hwas_PI_InterruptSubscriptionManagement_SubscribeToInterrupt_Pi(const asn1SccInt
 void
 hwas_PI_RawMemoryAccess_ReadBuffer_Pi(const asn1SccSourceAddress* IN_address, asn1SccByteBuffer* OUT_buffer)
 {
-    uint32_t* address = (uint32_t*)IN_address;
+    uint32_t* address = (uint32_t*)((uint32_t)*IN_address);
     for(int i = 0; i < OUT_buffer->nCount; i++) {
         OUT_buffer->arr[i] = *address;
         address++;
@@ -189,16 +189,16 @@ hwas_PI_RawMemoryAccess_ReadWord_Pi(const asn1SccSourceAddress* IN_address,
                                     const asn1SccWordMask* IN_mask,
                                     asn1SccWord* OUT_value)
 {
-    uint32_t addressInValue = (uint32_t)*IN_address;
+    uint32_t* address = (uint32_t*)((uint32_t)*IN_address);
     uint32_t maskValue = (uint32_t)*IN_mask;
     uint32_t* addressOut = (uint32_t*)OUT_value;
-    *addressOut = maskValue & addressInValue;
+    *addressOut = maskValue & *address;
 }
 
 void
 hwas_PI_RawMemoryAccess_WriteBuffer_Pi(const asn1SccDestinationAddress* IN_address, const asn1SccByteBuffer* IN_buffer)
 {
-    uint32_t* address = (uint32_t*)IN_address;
+    uint32_t* address = (uint32_t*)((uint32_t)*IN_address);
     for(int i = 0; i < IN_buffer->nCount; i++) {
         *address = (uint32_t)IN_buffer->arr[i];
         address++;
@@ -210,7 +210,7 @@ hwas_PI_RawMemoryAccess_WriteWord_Pi(const asn1SccDestinationAddress* IN_address
                                      const asn1SccWordMask* IN_mask,
                                      const asn1SccWord* IN_value)
 {
-    uint32_t* address = (uint32_t*)IN_address;
+    uint32_t* address = (uint32_t*)((uint32_t)*IN_address);
     uint32_t regValue = (uint32_t)*address;
     uint32_t mask = (uint32_t)*IN_mask;
     uint32_t valueToSet = (uint32_t)*IN_value;
