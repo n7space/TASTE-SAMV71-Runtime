@@ -24,6 +24,7 @@ PIOA_Handler(void)
         hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
     }
 }
+
 void
 PIOB_Handler(void)
 {
@@ -32,6 +33,7 @@ PIOB_Handler(void)
         hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
     }
 }
+
 void
 PIOC_Handler(void)
 {
@@ -40,6 +42,7 @@ PIOC_Handler(void)
         hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
     }
 }
+
 void
 PIOD_Handler(void)
 {
@@ -48,6 +51,7 @@ PIOD_Handler(void)
         hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
     }
 }
+
 void
 PIOE_Handler(void)
 {
@@ -56,6 +60,7 @@ PIOE_Handler(void)
         hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
     }
 }
+
 void
 ISI_Handler(void)
 {
@@ -64,6 +69,7 @@ ISI_Handler(void)
         hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
     }
 }
+
 void
 GMAC_Handler(void)
 {
@@ -72,6 +78,7 @@ GMAC_Handler(void)
         hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
     }
 }
+
 void
 SPI0_Handler(void)
 {
@@ -80,6 +87,7 @@ SPI0_Handler(void)
         hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
     }
 }
+
 void
 SPI1_Handler(void)
 {
@@ -88,6 +96,7 @@ SPI1_Handler(void)
         hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
     }
 }
+
 void
 TWIHS0_Handler(void)
 {
@@ -96,6 +105,7 @@ TWIHS0_Handler(void)
         hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
     }
 }
+
 void
 TWIHS1_Handler(void)
 {
@@ -104,6 +114,7 @@ TWIHS1_Handler(void)
         hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
     }
 }
+
 void
 TWIHS2_Handler(void)
 {
@@ -112,6 +123,7 @@ TWIHS2_Handler(void)
         hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
     }
 }
+
 void
 MCAN0_Handler(void)
 {
@@ -120,6 +132,7 @@ MCAN0_Handler(void)
         hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
     }
 }
+
 void
 MCAN1_Handler(void)
 {
@@ -137,25 +150,24 @@ hwas_startup(void)
 
 void
 hwas_PI_InterruptManagement_DisableInterrupt_Pi(const asn1SccInterruptNumber* IN_interrupt)
-
 {
     Nvic_disableInterrupt((Nvic_Irq)IN_interrupt);
 }
+
 void
 hwas_PI_InterruptManagement_EnableInterrupt_Pi(const asn1SccInterruptNumber* IN_interrupt)
-
 {
     Nvic_enableInterrupt((Nvic_Irq)IN_interrupt);
 }
+
 void
 hwas_PI_InterruptSubscriptionManagement_SubscribeToInterrupt_Pi(const asn1SccInterruptNumber* IN_interrupt)
-
 {
     interruptSubscribe[*IN_interrupt] = true;
 }
+
 void
 hwas_PI_RawMemoryAccess_ReadBuffer_Pi(const asn1SccSourceAddress* IN_address, asn1SccByteBuffer* OUT_buffer)
-
 {
     const asn1SccSourceAddress* address = IN_address;
     for(int i = 0; i < OUT_buffer->nCount; i++) {
@@ -163,14 +175,15 @@ hwas_PI_RawMemoryAccess_ReadBuffer_Pi(const asn1SccSourceAddress* IN_address, as
         address++;
     }
 }
+
 void
 hwas_PI_RawMemoryAccess_ReadWord_Pi(const asn1SccSourceAddress* IN_address,
                                     const asn1SccWordMask* IN_mask,
                                     asn1SccWord* OUT_value)
-
 {
     *OUT_value = *IN_address & *IN_mask;
 }
+
 void
 hwas_PI_RawMemoryAccess_WriteBuffer_Pi(asn1SccDestinationAddress* IN_address, const asn1SccByteBuffer* IN_buffer)
 {
@@ -185,7 +198,6 @@ void
 hwas_PI_RawMemoryAccess_WriteWord_Pi(asn1SccDestinationAddress* IN_address,
                                      const asn1SccWordMask* IN_mask,
                                      const asn1SccWord* IN_value)
-
 {
     *IN_address &= ~(*IN_mask);
     *IN_address |= (*IN_value & *IN_mask);
