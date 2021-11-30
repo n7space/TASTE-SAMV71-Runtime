@@ -64,13 +64,19 @@
 #define configUSE_MALLOC_FAILED_HOOK            1
 #define configUSE_APPLICATION_TASK_TAG          0
 #define configUSE_COUNTING_SEMAPHORES           1
+#define configSUPPORT_STATIC_ALLOCATION         1
 
 #ifndef configAPPLICATION_ALLOCATED_HEAP
 #define configAPPLICATION_ALLOCATED_HEAP        1   
 #endif
 
-__attribute__((section(".sdramMemorySection")))
-static uint8_t ucHeap[configTOTAL_HEAP_SIZE];
+/**
+ * @brief FreeRtos heap declaration
+ * First attribute puts heap into sdram
+ * Second suppresses warnings
+ */
+__attribute__((section(".sdramMemorySection"), unused))
+static uint8_t ucHeap[configTOTAL_HEAP_SIZE] = { 0 };
 
 /* The full demo always has tasks to run so the tick will never be turned off.
 The blinky demo will use the default tickless idle implementation to turn the
