@@ -39,6 +39,7 @@
 #include <string.h>
 
 SemaphoreHandle_t broker_lock;
+static StaticSemaphore_t broker_lock_buffer;
 
 #define UART_BAUDRATE 38400
 
@@ -229,7 +230,7 @@ Init_setup_sdram(void)
 inline static void
 Init_setup_broker_lock()
 {
-    broker_lock = xSemaphoreCreateBinary();
+    broker_lock = xSemaphoreCreateBinaryStatic(&broker_lock_buffer);
     xSemaphoreGive(broker_lock);
 }
 

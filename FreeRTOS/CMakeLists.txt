@@ -8,7 +8,9 @@ target_sources(Samv71FreeRtos
                 FreeRTOS-Kernel/tasks.c
                 FreeRTOS-Kernel/timers.c
                 FreeRTOS-Kernel/portable/GCC/ARM_CM7/r0p1/port.c
-                FreeRTOS-Kernel/portable/MemMang/heap_4.c)
+                FreeRTOS-Kernel/portable/MemMang/heap_4.c
+                FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/idle_task_static_memory.c
+                TimerTaskMemory.c)
 target_include_directories(Samv71FreeRtos
     PUBLIC      .
                 FreeRTOS-Kernel/include
