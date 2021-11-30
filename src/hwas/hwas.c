@@ -58,7 +58,11 @@ hwas_PI_RawMemoryAccess_ReadWord_Pi(const asn1SccSourceAddress* IN_address,
 void
 hwas_PI_RawMemoryAccess_WriteBuffer_Pi(asn1SccDestinationAddress* IN_address, const asn1SccByteBuffer* IN_buffer)
 {
-    // Write your code here
+    asn1SccSourceAddress* address = IN_address;
+    for(int i = 0; i < IN_buffer->nCount; i++) {
+        *address = IN_buffer->arr[i];
+        address++;
+    }
 }
 
 void
@@ -67,5 +71,6 @@ hwas_PI_RawMemoryAccess_WriteWord_Pi(asn1SccDestinationAddress* IN_address,
                                      const asn1SccWord* IN_value)
 
 {
-    // Write your code here
+    *IN_address &= ~(*IN_mask);
+    *IN_address |= (*IN_value & *IN_mask);
 }
