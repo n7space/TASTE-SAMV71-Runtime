@@ -12,11 +12,14 @@
 #include "hwas.h"
 #include "Nvic/Nvic.h"
 
+#include <string.h>
+
+static bool interruptSubscribe[Nvic_InterruptCount] = { 0 };
+
 void
 hwas_startup(void)
 {
-    // Write your initialisation code, but DO NOT CALL REQUIRED INTERFACES
-    // puts ("[HWAS] Startup");
+    memset(interruptSubscribe, 0, Nvic_InterruptCount);
 }
 
 void
@@ -35,7 +38,7 @@ void
 hwas_PI_InterruptSubscriptionManagement_SubscribeToInterrupt_Pi(const asn1SccInterruptNumber* IN_interrupt)
 
 {
-    // Write your code here
+    interruptSubscribe[*IN_interrupt] = true;
 }
 void
 hwas_PI_RawMemoryAccess_ReadBuffer_Pi(const asn1SccSourceAddress* IN_address, asn1SccByteBuffer* OUT_buffer)
