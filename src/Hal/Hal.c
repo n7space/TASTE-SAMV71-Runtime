@@ -18,64 +18,65 @@
  * higher the priority is. Thus, the UART interrupt priority value
  * must be equal or greater then configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY.
  */
-
 #define UART_INTERRUPT_PRIORITY configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY
 
-static void Hal_uart_init_pio(Uart_Id id);
-static void Hal_uart_init_uart0_pio(Pio_Port* const port,
-                                    Pio_Port_Config* const pioConfigTx,
-                                    Pio_Port_Config* const pioConfigRx);
-static void Hal_uart_init_uart1_pio(Pio_Port* const port,
-                                    Pio_Port_Config* const pioConfigTx,
-                                    Pio_Port_Config* const pioConfigRx);
-static void Hal_uart_init_uart2_pio(Pio_Port* const port,
-                                    Pio_Port_Config* const pioConfigTx,
-                                    Pio_Port_Config* const pioConfigRx);
-static void Hal_uart_init_uart3_pio(Pio_Port* const port,
-                                    Pio_Port_Config* const pioConfigTx,
-                                    Pio_Port_Config* const pioConfigRx);
-static void Hal_uart_init_uart4_pio(Pio_Port* const port,
-                                    Pio_Port_Config* const pioConfigTx,
-                                    Pio_Port_Config* const pioConfigRx);
-
-static void Hal_uart_init_pmc(Uart_Id id);
-static void Hal_uart_init_nvic(Uart_Id id);
-
-void
-Hal_uart_init(Hal_Uart* const halUart, Hal_Uart_Config halUartConfig)
+inline static void
+Hal_uart_init_uart0_pio(Pio_Port* const port, Pio_Port_Config* const pioConfigTx, Pio_Port_Config* const pioConfigRx)
 {
-    assert(halUartConfig.id <= Uart_Id_4);
-    assert((halUartConfig.parity <= Uart_Parity_Odd) || (halUartConfig.parity == Uart_Parity_None));
+    *port = Pio_Port_A;
 
-    Hal_uart_init_pmc(halUartConfig.id);
-    Hal_uart_init_pio(halUartConfig.id);
-    Hal_uart_init_nvic(halUartConfig.id);
+    pioConfigRx->pins = PIO_PIN_9;
+    pioConfigRx->pinsConfig.control = Pio_Control_PeripheralA;
 
-    Uart_startup(&halUart->uart);
-    Uart_init(halUartConfig.id, &halUart->uart);
+    pioConfigTx->pins = PIO_PIN_10;
+    pioConfigTx->pinsConfig.control = Pio_Control_PeripheralA;
+}
+inline static void
+Hal_uart_init_uart1_pio(Pio_Port* const port, Pio_Port_Config* const pioConfigTx, Pio_Port_Config* const pioConfigRx)
+{
+    *port = Pio_Port_A;
 
-    Uart_Config config = { .isTxEnabled = true,
-                           .isRxEnabled = true,
-                           .isTestModeEnabled = false,
-                           .parity = halUartConfig.parity,
-                           .baudRate = halUartConfig.baudrate,
-                           .baudRateClkSrc = Uart_BaudRateClk_PeripheralCk,
-                           .baudRateClkFreq = SystemConfig_DefaultPeriphClock };
-    Uart_setConfig(&halUart->uart, &config);
+    pioConfigRx->pins = PIO_PIN_5;
+    pioConfigRx->pinsConfig.control = Pio_Control_PeripheralC;
+
+    pioConfigTx->pins = PIO_PIN_6;
+    pioConfigTx->pinsConfig.control = Pio_Control_PeripheralC;
 }
 
-void
-Hal_uart_write(Hal_Uart* const halUart, uint8_t* const buffer, const uint16_t length, const Uart_TxHandler txHandler)
+inline static void
+Hal_uart_init_uart2_pio(Pio_Port* const port, Pio_Port_Config* const pioConfigTx, Pio_Port_Config* const pioConfigRx)
 {
-    ByteFifo_initFromBytes(&halUart->txFifo, buffer, length);
-    Uart_writeAsync(&halUart->uart, &halUart->txFifo, txHandler);
+    *port = Pio_Port_D;
+
+    pioConfigRx->pins = PIO_PIN_25;
+    pioConfigRx->pinsConfig.control = Pio_Control_PeripheralC;
+
+    pioConfigTx->pins = PIO_PIN_26;
+    pioConfigTx->pinsConfig.control = Pio_Control_PeripheralC;
 }
 
-void
-Hal_uart_read(Hal_Uart* const halUart, uint8_t* const buffer, const uint16_t length, const Uart_RxHandler rxHandler)
+inline static void
+Hal_uart_init_uart3_pio(Pio_Port* const port, Pio_Port_Config* const pioConfigTx, Pio_Port_Config* const pioConfigRx)
 {
-    ByteFifo_init(&halUart->rxFifo, buffer, length);
-    Uart_readAsync(&halUart->uart, &halUart->rxFifo, rxHandler);
+    *port = Pio_Port_D;
+
+    pioConfigRx->pins = PIO_PIN_28;
+    pioConfigRx->pinsConfig.control = Pio_Control_PeripheralA;
+
+    pioConfigTx->pins = PIO_PIN_30;
+    pioConfigTx->pinsConfig.control = Pio_Control_PeripheralA;
+}
+
+inline static void
+Hal_uart_init_uart4_pio(Pio_Port* const port, Pio_Port_Config* const pioConfigTx, Pio_Port_Config* const pioConfigRx)
+{
+    *port = Pio_Port_D;
+
+    pioConfigRx->pins = PIO_PIN_18;
+    pioConfigRx->pinsConfig.control = Pio_Control_PeripheralC;
+
+    pioConfigTx->pins = PIO_PIN_19;
+    pioConfigTx->pinsConfig.control = Pio_Control_PeripheralC;
 }
 
 static inline void
@@ -122,62 +123,6 @@ Hal_uart_init_pio(Uart_Id id)
 }
 
 inline static void
-Hal_uart_init_uart0_pio(Pio_Port* const port, Pio_Port_Config* const pioConfigTx, Pio_Port_Config* const pioConfigRx)
-{
-    *port = Pio_Port_A;
-
-    pioConfigRx->pins = PIO_PIN_9;
-    pioConfigRx->pinsConfig.control = Pio_Control_PeripheralA;
-
-    pioConfigTx->pins = PIO_PIN_10;
-    pioConfigTx->pinsConfig.control = Pio_Control_PeripheralA;
-}
-inline static void
-Hal_uart_init_uart1_pio(Pio_Port* const port, Pio_Port_Config* const pioConfigTx, Pio_Port_Config* const pioConfigRx)
-{
-    *port = Pio_Port_A;
-
-    pioConfigRx->pins = PIO_PIN_5;
-    pioConfigRx->pinsConfig.control = Pio_Control_PeripheralC;
-
-    pioConfigTx->pins = PIO_PIN_6;
-    pioConfigTx->pinsConfig.control = Pio_Control_PeripheralC;
-}
-inline static void
-Hal_uart_init_uart2_pio(Pio_Port* const port, Pio_Port_Config* const pioConfigTx, Pio_Port_Config* const pioConfigRx)
-{
-    *port = Pio_Port_D;
-
-    pioConfigRx->pins = PIO_PIN_25;
-    pioConfigRx->pinsConfig.control = Pio_Control_PeripheralC;
-
-    pioConfigTx->pins = PIO_PIN_26;
-    pioConfigTx->pinsConfig.control = Pio_Control_PeripheralC;
-}
-inline static void
-Hal_uart_init_uart3_pio(Pio_Port* const port, Pio_Port_Config* const pioConfigTx, Pio_Port_Config* const pioConfigRx)
-{
-    *port = Pio_Port_D;
-
-    pioConfigRx->pins = PIO_PIN_28;
-    pioConfigRx->pinsConfig.control = Pio_Control_PeripheralA;
-
-    pioConfigTx->pins = PIO_PIN_30;
-    pioConfigTx->pinsConfig.control = Pio_Control_PeripheralA;
-}
-inline static void
-Hal_uart_init_uart4_pio(Pio_Port* const port, Pio_Port_Config* const pioConfigTx, Pio_Port_Config* const pioConfigRx)
-{
-    *port = Pio_Port_D;
-
-    pioConfigRx->pins = PIO_PIN_18;
-    pioConfigRx->pinsConfig.control = Pio_Control_PeripheralC;
-
-    pioConfigTx->pins = PIO_PIN_19;
-    pioConfigTx->pinsConfig.control = Pio_Control_PeripheralC;
-}
-
-inline static void
 Hal_uart_init_pmc(Uart_Id id)
 {
     switch(id) {
@@ -204,7 +149,7 @@ Hal_uart_init_pmc(Uart_Id id)
     }
 }
 
-inline inline static void
+inline static void
 Hal_uart_init_nvic(Uart_Id id)
 {
     switch(id) {
@@ -232,7 +177,44 @@ Hal_uart_init_nvic(Uart_Id id)
     }
 }
 
-inline void
+void
+Hal_uart_init(Hal_Uart* const halUart, Hal_Uart_Config halUartConfig)
+{
+    assert(halUartConfig.id <= Uart_Id_4);
+    assert((halUartConfig.parity <= Uart_Parity_Odd) || (halUartConfig.parity == Uart_Parity_None));
+
+    Hal_uart_init_pmc(halUartConfig.id);
+    Hal_uart_init_pio(halUartConfig.id);
+    Hal_uart_init_nvic(halUartConfig.id);
+
+    Uart_startup(&halUart->uart);
+    Uart_init(halUartConfig.id, &halUart->uart);
+
+    Uart_Config config = { .isTxEnabled = true,
+                           .isRxEnabled = true,
+                           .isTestModeEnabled = false,
+                           .parity = halUartConfig.parity,
+                           .baudRate = halUartConfig.baudrate,
+                           .baudRateClkSrc = Uart_BaudRateClk_PeripheralCk,
+                           .baudRateClkFreq = SystemConfig_DefaultPeriphClock };
+    Uart_setConfig(&halUart->uart, &config);
+}
+
+void
+Hal_uart_write(Hal_Uart* const halUart, uint8_t* const buffer, const uint16_t length, const Uart_TxHandler txHandler)
+{
+    ByteFifo_initFromBytes(&halUart->txFifo, buffer, length);
+    Uart_writeAsync(&halUart->uart, &halUart->txFifo, txHandler);
+}
+
+void
+Hal_uart_read(Hal_Uart* const halUart, uint8_t* const buffer, const uint16_t length, const Uart_RxHandler rxHandler)
+{
+    ByteFifo_init(&halUart->rxFifo, buffer, length);
+    Uart_readAsync(&halUart->uart, &halUart->rxFifo, rxHandler);
+}
+
+static inline void
 Hal_console_usart_init_pio(void)
 {
     Pio pioB;
@@ -250,14 +232,14 @@ Hal_console_usart_init_pio(void)
     Pio_setPinsConfig(&pioB, PIO_PIN_4, &pinConf);
 }
 
-inline void
+static inline void
 Hal_console_usart_init_pmc(void)
 {
     Pmc_enablePeripheralClk(Pmc_PeripheralId_PioB);
     Pmc_enablePeripheralClk(Pmc_PeripheralId_Usart1);
 }
 
-inline void
+static inline void
 Hal_console_usart_init_mode(void)
 {
     // cppcheck-suppress misra2012_11_4
@@ -287,7 +269,7 @@ Hal_console_usart_init_mode(void)
     *US_MR |= USART_MR_ONEBIT_1_BIT << USART_MR_ONEBIT_OFFSET;     // ONEBIT 1 bit start frame delimiterx
 }
 
-inline void
+static inline void
 Hal_console_usart_init_baudrate()
 {
     // cppcheck-suppress misra2012_11_4
@@ -302,7 +284,7 @@ Hal_console_usart_init_baudrate()
     *US_BRGR = coarseDiv | ((uint32_t)fineDiv << USART_BRGR_FINE_DIV_OFFSET);
 }
 
-inline void
+static inline void
 Hal_console_usart_init_bus_matrix()
 {
     // cppcheck-suppress misra2012_11_4
@@ -311,7 +293,7 @@ Hal_console_usart_init_bus_matrix()
     *CCFG_SYSIO |= MATRIX_CCFG_SYSIO_PB4_SELECTED << MATRIX_CCFG_SYSIO_SYSIO4_OFFSET;
 }
 
-inline void
+static inline void
 Hal_console_usart_init_tx_enable()
 {
     // cppcheck-suppress misra2012_11_4
@@ -331,7 +313,7 @@ Hal_console_usart_init(void)
     Hal_console_usart_init_tx_enable();
 }
 
-inline void
+static inline void
 waitForTransmitterReady(void)
 {
     volatile uint32_t* const US_CSR = (uint32_t*)USART1_CSR_ADDRESS;
@@ -339,7 +321,7 @@ waitForTransmitterReady(void)
         asm volatile("nop");
 }
 
-inline void
+static inline void
 writeByte(const uint8_t data)
 {
     waitForTransmitterReady();
