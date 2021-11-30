@@ -72,7 +72,7 @@
 
 /**
  * @brief FreeRtos heap declaration
- * First attribute puts heap into sram
+ * First attribute puts heap into sdram
  * Second suppresses warnings
  */
 __attribute__((section(".sdramMemorySection"), unused))
