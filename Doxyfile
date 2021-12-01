@@ -833,6 +833,8 @@ WARN_LOGFILE           =
 
 INPUT                  = src/Hal \
                          src/Init \
+                         src/hwas \
+                         src/BrokerLock
                          SAMV71-BSP/src
 
 # This tag can be used to specify the character encoding of the source files
