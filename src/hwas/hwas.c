@@ -182,7 +182,7 @@ void
 HwasInterruptHandlerTask(void* args)
 {
     (void)args;
-    while(1) {
+    while(true) {
         asn1SccInterrupt_Type value;
         if(xQueueReceive(hwasInterruptQueueHandle, &value, portMAX_DELAY) == pdTRUE) {
             hwas_RI_InterruptSubscription_Interrupt_Ri(&value);
