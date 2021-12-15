@@ -39,11 +39,18 @@ __attribute__((section(".sdramMemorySection"))) static StackType_t hwasStackBuff
 __attribute__((section(".sdramMemorySection"))) static StaticTask_t hwasTaskBuffer;
 
 void
+HwasHandleInterrupt(asn1SccInterrupt_Type* irq)
+{
+    xQueueSendFromISR(hwasInterruptQueueHandle, irq, NULL);
+    hwas_PI_InterruptManagement_DisableInterrupt_Pi(&irq->interrupt);
+}
+
+void
 PIOA_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_PioA]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_PioA };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -52,7 +59,7 @@ PIOB_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_PioB]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_PioB };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -61,7 +68,7 @@ PIOC_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_PioC]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_PioC };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -70,7 +77,7 @@ PIOD_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_PioD]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_PioD };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -79,7 +86,7 @@ PIOE_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_PioE]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_PioE };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -88,7 +95,7 @@ ISI_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Isi]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Isi };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -97,7 +104,7 @@ GMAC_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Gmac]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Gmac };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -106,7 +113,7 @@ SPI0_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Spi0]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Spi0 };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -115,7 +122,7 @@ SPI1_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Spi1]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Spi1 };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -124,7 +131,7 @@ TWIHS0_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Twihs0]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Twihs0 };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -133,7 +140,7 @@ TWIHS1_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Twihs1]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Twihs1 };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -142,7 +149,7 @@ TWIHS2_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Twihs2]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Twihs2 };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -151,11 +158,11 @@ MCAN0_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Mcan0_Irq0]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Mcan0_Irq0 };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
     if(interruptSubscribe[Nvic_Irq_Mcan0_Irq1]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Mcan0_Irq1 };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -164,11 +171,11 @@ MCAN1_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Mcan1_Irq0]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Mcan1_Irq0 };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
     if(interruptSubscribe[Nvic_Irq_Mcan1_Irq1]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Mcan1_Irq1 };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
