@@ -10,18 +10,46 @@
  */
 
 #include "hwas.h"
-#include "Nvic/Nvic.h"
+
+#include <Nvic/Nvic.h>
 
 #include <string.h>
+#include <assert.h>
+
+#include <FreeRTOS.h>
+#include <queue.h>
+#include <task.h>
 
 static volatile bool interruptSubscribe[Nvic_InterruptCount] = { 0 };
+
+#define HWAS_INTERRUPT_QUEUE_SIZE 100
+#define HWAS_INTERRUPT_QUEUE_ITEM_SIZE (sizeof(asn1SccInterrupt_Type))
+#define HWAS_INTERRUPT_STACK_SIZE 100
+#define HWAS_INTERRUPT_PRIORITY 1
+
+#define PERIPH_INTERRUPT_PRIORITY 1
+
+__attribute__((section(".sdramMemorySection"))) static volatile QueueHandle_t hwasInterruptQueueHandle;
+__attribute__((section(".sdramMemorySection"))) static uint8_t
+        hwasInterruptQueueStorageBuffer[HWAS_INTERRUPT_QUEUE_SIZE * HWAS_INTERRUPT_QUEUE_ITEM_SIZE];
+__attribute__((section(".sdramMemorySection"))) static StaticQueue_t hwasInterruptQueueBuffer;
+
+__attribute__((section(".sdramMemorySection"))) static StackType_t hwasTaskStackBuffer[HWAS_INTERRUPT_STACK_SIZE];
+__attribute__((section(".sdramMemorySection"))) static StaticTask_t hwasTaskBuffer;
+
+void
+HwasHandleInterrupt(asn1SccInterrupt_Type* irq)
+{
+    xQueueSendFromISR(hwasInterruptQueueHandle, irq, NULL);
+    hwas_PI_InterruptManagement_DisableInterrupt_Pi(&irq->interrupt);
+}
 
 void
 PIOA_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_PioA]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_PioA };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -30,7 +58,7 @@ PIOB_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_PioB]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_PioB };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -39,7 +67,7 @@ PIOC_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_PioC]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_PioC };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -48,7 +76,7 @@ PIOD_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_PioD]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_PioD };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -57,7 +85,7 @@ PIOE_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_PioE]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_PioE };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -66,7 +94,7 @@ ISI_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Isi]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Isi };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -75,7 +103,7 @@ GMAC_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Gmac]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Gmac };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -84,7 +112,7 @@ SPI0_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Spi0]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Spi0 };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -93,7 +121,7 @@ SPI1_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Spi1]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Spi1 };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -102,7 +130,7 @@ TWIHS0_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Twihs0]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Twihs0 };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -111,7 +139,7 @@ TWIHS1_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Twihs1]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Twihs1 };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -120,7 +148,7 @@ TWIHS2_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Twihs2]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Twihs2 };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -129,11 +157,11 @@ MCAN0_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Mcan0_Irq0]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Mcan0_Irq0 };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
     if(interruptSubscribe[Nvic_Irq_Mcan0_Irq1]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Mcan0_Irq1 };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
 }
 
@@ -142,11 +170,26 @@ MCAN1_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Mcan1_Irq0]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Mcan1_Irq0 };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
     }
     if(interruptSubscribe[Nvic_Irq_Mcan1_Irq1]) {
         asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Mcan1_Irq1 };
-        hwas_RI_InterruptSubscription_Interrupt_Ri(&irq);
+        HwasHandleInterrupt(&irq);
+    }
+}
+
+void
+HwasInterruptHandlerTask(void* args)
+{
+    (void)args;
+    while(true) {
+        asn1SccInterrupt_Type value;
+        if(xQueueReceive(hwasInterruptQueueHandle, &value, portMAX_DELAY) == pdTRUE) {
+            hwas_RI_InterruptSubscription_Interrupt_Ri(&value);
+        } else {
+            assert(false && "Error while reading the queue");
+            break;
+        }
     }
 }
 
@@ -154,6 +197,19 @@ void
 hwas_startup(void)
 {
     memset((void*)interruptSubscribe, 0, Nvic_InterruptCount);
+    hwasInterruptQueueHandle = xQueueCreateStatic(HWAS_INTERRUPT_QUEUE_SIZE,
+                                                  HWAS_INTERRUPT_QUEUE_ITEM_SIZE,
+                                                  hwasInterruptQueueStorageBuffer,
+                                                  &hwasInterruptQueueBuffer);
+    assert(hwasInterruptQueueHandle != NULL);
+    assert(xTaskCreateStatic(HwasInterruptHandlerTask,
+                             "HwasInterruptHandlerTask",
+                             HWAS_INTERRUPT_STACK_SIZE,
+                             NULL,
+                             HWAS_INTERRUPT_PRIORITY,
+                             hwasTaskStackBuffer,
+                             &hwasTaskBuffer)
+           != NULL);
 }
 
 void
@@ -165,6 +221,7 @@ hwas_PI_InterruptManagement_DisableInterrupt_Pi(const asn1SccInterruptNumber* IN
 void
 hwas_PI_InterruptManagement_EnableInterrupt_Pi(const asn1SccInterruptNumber* IN_interrupt)
 {
+    Nvic_setInterruptPriority((Nvic_Irq)*IN_interrupt, PERIPH_INTERRUPT_PRIORITY);
     Nvic_enableInterrupt((Nvic_Irq)*IN_interrupt);
 }
 
