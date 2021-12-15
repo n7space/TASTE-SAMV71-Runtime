@@ -215,7 +215,6 @@ hwas_PI_InterruptManagement_DisableInterrupt_Pi(const asn1SccInterruptNumber* IN
 void
 hwas_PI_InterruptManagement_EnableInterrupt_Pi(const asn1SccInterruptNumber* IN_interrupt)
 {
-    // todo get rid of this magic value
     Nvic_setInterruptPriority((Nvic_Irq)*IN_interrupt, PERIPH_INTERRUPT_PRIORITY);
     Nvic_enableInterrupt((Nvic_Irq)*IN_interrupt);
 }
