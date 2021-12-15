@@ -30,11 +30,10 @@ static volatile bool interruptSubscribe[Nvic_InterruptCount] = { 0 };
 #define PERIPH_INTERRUPT_PRIORITY 2
 
 __attribute__((section(".sdramMemorySection"))) static volatile QueueHandle_t hwasInterruptQueueHandle;
-
 __attribute__((section(".sdramMemorySection"))) static uint8_t
         hwasInterruptQueueStorageBuffer[HWAS_INTERRUPT_QUEUE_SIZE * HWAS_INTERRUPT_QUEUE_ITEM_SIZE];
-
 __attribute__((section(".sdramMemorySection"))) static StaticQueue_t hwasInterruptQueueBuffer;
+
 __attribute__((section(".sdramMemorySection"))) static StackType_t hwasStackBuffer[HWAS_INTERRUPT_STACK_SIZE];
 __attribute__((section(".sdramMemorySection"))) static StaticTask_t hwasTaskBuffer;
 
