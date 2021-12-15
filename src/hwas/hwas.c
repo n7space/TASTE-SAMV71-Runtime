@@ -10,11 +10,31 @@
  */
 
 #include "hwas.h"
-#include "Nvic/Nvic.h"
+
+#include <Nvic/Nvic.h>
 
 #include <string.h>
+#include <assert.h>
+
+#include <FreeRTOS.h>
+#include <queue.h>
+#include <task.h>
 
 static volatile bool interruptSubscribe[Nvic_InterruptCount] = { 0 };
+
+#define HWAS_INTERRUPT_QUEUE_SIZE 100
+#define HWAS_INTERRUPT_QUEUE_ITEM_SIZE (sizeof(asn1SccInterrupt_Type))
+#define HWAS_INTERRUPT_STACK_SIZE 100
+#define HWAS_INTERRUPT_PRIORITY 1
+
+__attribute__((section(".sdramMemorySection"))) static volatile QueueHandle_t hwasInterruptQueueHandle;
+
+__attribute__((section(".sdramMemorySection"))) static uint8_t
+        hwasInterruptQueueStorageBuffer[HWAS_INTERRUPT_QUEUE_SIZE * HWAS_INTERRUPT_QUEUE_ITEM_SIZE];
+
+__attribute__((section(".sdramMemorySection"))) static StaticQueue_t hwasInterruptQueueBuffer;
+__attribute__((section(".sdramMemorySection"))) static StackType_t hwasStackBuffer[HWAS_INTERRUPT_STACK_SIZE];
+__attribute__((section(".sdramMemorySection"))) static StaticTask_t hwasTaskBuffer;
 
 void
 PIOA_Handler(void)
@@ -151,9 +171,37 @@ MCAN1_Handler(void)
 }
 
 void
+HwasInterruptHandlerTask(void* args)
+{
+    (void)args;
+    while(1) {
+        asn1SccInterrupt_Type value;
+        if(xQueueReceive(hwasInterruptQueueHandle, &value, portMAX_DELAY) == pdTRUE) {
+            hwas_RI_InterruptSubscription_Interrupt_Ri(&value);
+        } else {
+            assert(false && "Error while reading the queue");
+            break;
+        }
+    }
+}
+
+void
 hwas_startup(void)
 {
     memset((void*)interruptSubscribe, 0, Nvic_InterruptCount);
+    hwasInterruptQueueHandle = xQueueCreateStatic(HWAS_INTERRUPT_QUEUE_SIZE,
+                                                  HWAS_INTERRUPT_QUEUE_ITEM_SIZE,
+                                                  hwasInterruptQueueStorageBuffer,
+                                                  &hwasInterruptQueueBuffer);
+    assert(hwasInterruptQueueHandle != NULL);
+    assert(xTaskCreateStatic(HwasInterruptHandlerTask,
+                             "HwasInterruptHandlerTask",
+                             HWAS_INTERRUPT_STACK_SIZE,
+                             NULL,
+                             HWAS_INTERRUPT_PRIORITY,
+                             hwasStackBuffer,
+                             &hwasTaskBuffer)
+           != NULL);
 }
 
 void
