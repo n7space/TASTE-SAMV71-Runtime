@@ -27,7 +27,7 @@ static volatile bool interruptSubscribe[Nvic_InterruptCount] = { 0 };
 #define HWAS_INTERRUPT_STACK_SIZE 100
 #define HWAS_INTERRUPT_PRIORITY 1
 
-#define PERIPH_INTERRUPT_PRIORITY 2
+#define PERIPH_INTERRUPT_PRIORITY 1
 
 __attribute__((section(".sdramMemorySection"))) static volatile QueueHandle_t hwasInterruptQueueHandle;
 __attribute__((section(".sdramMemorySection"))) static uint8_t
