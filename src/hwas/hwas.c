@@ -34,7 +34,7 @@ __attribute__((section(".sdramMemorySection"))) static uint8_t
         hwasInterruptQueueStorageBuffer[HWAS_INTERRUPT_QUEUE_SIZE * HWAS_INTERRUPT_QUEUE_ITEM_SIZE];
 __attribute__((section(".sdramMemorySection"))) static StaticQueue_t hwasInterruptQueueBuffer;
 
-__attribute__((section(".sdramMemorySection"))) static StackType_t hwasStackBuffer[HWAS_INTERRUPT_STACK_SIZE];
+__attribute__((section(".sdramMemorySection"))) static StackType_t hwasTaskStackBuffer[HWAS_INTERRUPT_STACK_SIZE];
 __attribute__((section(".sdramMemorySection"))) static StaticTask_t hwasTaskBuffer;
 
 void
@@ -207,7 +207,7 @@ hwas_startup(void)
                              HWAS_INTERRUPT_STACK_SIZE,
                              NULL,
                              HWAS_INTERRUPT_PRIORITY,
-                             hwasStackBuffer,
+                             hwasTaskStackBuffer,
                              &hwasTaskBuffer)
            != NULL);
 }
