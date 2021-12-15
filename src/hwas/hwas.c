@@ -27,6 +27,8 @@ static volatile bool interruptSubscribe[Nvic_InterruptCount] = { 0 };
 #define HWAS_INTERRUPT_STACK_SIZE 100
 #define HWAS_INTERRUPT_PRIORITY 1
 
+#define PERIPH_INTERRUPT_PRIORITY 2
+
 __attribute__((section(".sdramMemorySection"))) static volatile QueueHandle_t hwasInterruptQueueHandle;
 
 __attribute__((section(".sdramMemorySection"))) static uint8_t
@@ -213,6 +215,8 @@ hwas_PI_InterruptManagement_DisableInterrupt_Pi(const asn1SccInterruptNumber* IN
 void
 hwas_PI_InterruptManagement_EnableInterrupt_Pi(const asn1SccInterruptNumber* IN_interrupt)
 {
+    // todo get rid of this magic value
+    Nvic_setInterruptPriority((Nvic_Irq)*IN_interrupt, PERIPH_INTERRUPT_PRIORITY);
     Nvic_enableInterrupt((Nvic_Irq)*IN_interrupt);
 }
 
