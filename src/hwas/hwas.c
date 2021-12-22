@@ -287,13 +287,16 @@ hwas_PI_RawMemoryAccess_ReadModifyWriteWord_Pi(const asn1SccDestinationAddress* 
     volatile uint32_t newValue;
     volatile uint32_t result = 1;
     do {
+        /// Read
         __asm volatile("   ldrex  %[memVal],   [%[address]]  \n\r"
                        : [ memVal ] "=&r"(memVal)
                        : [ address ] "r"(address)
                        : "memory");
 
+        /// Modify
         newValue = (memVal & ~*IN_mask) | (*IN_value & *IN_mask);
 
+        /// Write
         __asm volatile("    strex   %[result],  %[newValue], [%[address]] \n\r"
                        : [ result ] "=&r"(result)
                        : [ newValue ] "r"(newValue), [ address ] "r"(address)
