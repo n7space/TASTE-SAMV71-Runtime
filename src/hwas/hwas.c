@@ -289,4 +289,5 @@ hwas_PI_RawMemoryAccess_ReadModifyWriteWord_Pi(const asn1SccDestinationAddress* 
                    : [ memVal ] "=&r"(memVal)
                    : [ address ] "r"(address)
                    : "memory");
+    volatile uint32_t newValue = (memVal & ~*IN_mask) | (*IN_value & *IN_mask);
 }
