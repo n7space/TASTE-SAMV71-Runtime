@@ -276,3 +276,10 @@ hwas_PI_RawMemoryAccess_WriteWord_Pi(const asn1SccDestinationAddress* IN_address
 
     *address = regValue;
 }
+
+void
+hwas_PI_RawMemoryAccess_ReadModifyWriteWord_Pi(const asn1SccDestinationAddress* IN_address,
+                                               const asn1SccWordMask* IN_mask,
+                                               const asn1SccWord* IN_value)
+{
+}
