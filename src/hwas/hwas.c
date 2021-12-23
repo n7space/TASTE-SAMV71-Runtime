@@ -302,6 +302,4 @@ hwas_PI_RawMemoryAccess_ReadModifyWriteWord_Pi(const asn1SccDestinationAddress* 
                        : [ newValue ] "r"(newValue), [ address ] "r"(address)
                        : "memory");
     } while(result);
-
-    // __asm volatile("")
 }
