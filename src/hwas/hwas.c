@@ -298,6 +298,7 @@ hwas_PI_RawMemoryAccess_ReadModifyWriteWord_Pi(const asn1SccDestinationAddress* 
 
         /// Write
         __asm volatile("    strex   %[result],  %[newValue], [%[address]] \n\r"
+                       "    dmb"
                        : [ result ] "=&r"(result)
                        : [ newValue ] "r"(newValue), [ address ] "r"(address)
                        : "memory");
