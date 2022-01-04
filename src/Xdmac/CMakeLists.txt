@@ -3,7 +3,8 @@ project(Samv71RuntimeXdmac VERSION 1.0.0 LANGUAGES C)
 add_library(Samv71RuntimeXdmac STATIC)
 target_sources(Samv71RuntimeXdmac
     PRIVATE     Xdmac.c
-    PUBLIC      Xdmac.h)
+    PUBLIC      Xdmac.h
+                XdmacRegisters.h)
 target_include_directories(Samv71RuntimeXdmac
     PRIVATE     ${CMAKE_CURRENT_SOURCE_DIR}/..)
 target_link_libraries(Samv71RuntimeXdmac
