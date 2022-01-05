@@ -103,14 +103,31 @@ typedef struct
     Xdmac_ChannelPeripheralId peripheralId;
 } Xdmac_ChannelDataConfig;
 
+typedef enum
+{
+    Xdmac_LinkedListView_0 = 0,
+    Xdmac_LinkedListView_1,
+    Xdmac_LinkedListView_2,
+    Xdmac_LinkedListView_3,
+} Xdmac_LinkedListView;
+
+typedef struct
+{
+    void* nextDescriptorAddress;
+    Xdmac_LinkedListView nextDescriptorView;
+    bool isNextDescriptorFetchEnabled;
+    bool isNextDescriptorSourceUpdateEnabled;
+    bool isNextDescriptorDestinationUpdateEnabled;
+} Xdmac_DescriptorControl;
+
 typedef struct
 {
     void* sourceAddress;
     void* destinationAddress;
-
     uint32_t uBlockLength;
     uint32_t blockLength;
     Xdmac_ChannelDataConfig dataConfig;
+    Xdmac_DescriptorControl linkedListDescriptor;
 } Xdmac_ChannelConfig;
 
 #endif
