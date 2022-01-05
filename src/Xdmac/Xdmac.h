@@ -138,4 +138,49 @@ typedef struct
     uint32_t ta;  ///< Transfer Address.
 } Xdmac_LinkedListNode_View0;
 
+typedef enum
+{
+    Xdmac_Channel_0,
+    Xdmac_Channel_1,
+    Xdmac_Channel_2,
+    Xdmac_Channel_3,
+    Xdmac_Channel_4,
+    Xdmac_Channel_5,
+    Xdmac_Channel_6,
+    Xdmac_Channel_7,
+    Xdmac_Channel_8,
+    Xdmac_Channel_9,
+    Xdmac_Channel_10,
+    Xdmac_Channel_11,
+    Xdmac_Channel_12,
+    Xdmac_Channel_13,
+    Xdmac_Channel_14,
+    Xdmac_Channel_15,
+    Xdmac_Channel_16,
+    Xdmac_Channel_17,
+    Xdmac_Channel_18,
+    Xdmac_Channel_19,
+    Xdmac_Channel_20,
+    Xdmac_Channel_21,
+    Xdmac_Channel_22,
+    Xdmac_Channel_23,
+    Xdmac_Number_Of_Channels,
+}Xdmac_Channel;
+
+/// \brief Function used to enable a channel.
+/// \param [in] channel Identifier of the channel to enable.
+void Xdmac_enableChannel(Xdmac_Channel const channel);
+
+/// \brief Function used to disable a channel.
+/// \param [in] channel Identifier of the channel to disable.
+void Xdmac_disableChannel(Xdmac_Channel const channel);
+
+/// \brief Function used to enable interrupts on a channel.
+/// \param [in] channel Identifier of the channel to enable interrupts on.
+void Xdmac_enableChannelIrqs(Xdmac_Channel const channel);
+
+/// \brief Function used to enable interrupts on a channel.
+/// \param [in] channel Identifier of the channel to enable interrupts on.
+void Xdmac_disableChannelIrqs(Xdmac_Channel const channel);
+
 #endif

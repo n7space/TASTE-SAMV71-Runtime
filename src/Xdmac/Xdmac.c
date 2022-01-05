@@ -19,3 +19,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+static XDMAC
+
+void Xdmac_enableChannel(Xdmac_Channel const channel) {
+
+}
+void Xdmac_disableChannel(Xdmac_Channel const channel) {
+
+}
+void Xdmac_enableChannelIrqs(Xdmac_Channel const channel) {
+
+}
+void Xdmac_disableChannelIrqs(Xdmac_Channel const channel) {
+
+}
