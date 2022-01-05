@@ -130,4 +130,12 @@ typedef struct
     Xdmac_DescriptorControl linkedListDescriptor;
 } Xdmac_ChannelConfig;
 
+/// \brief A structure mapping the contents of a linked list node descriptor with view type 0.
+typedef struct
+{
+    uint32_t nda; ///< Next Descriptor Address.
+    uint32_t ubc; ///< Microblock Control.
+    uint32_t ta;  ///< Transfer Address.
+} Xdmac_LinkedListNode_View0;
+
 #endif
