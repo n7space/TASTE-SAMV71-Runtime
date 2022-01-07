@@ -303,7 +303,7 @@ hwas_PI_RawMemoryAccess_ExclusiveWriteWord_Pi(const asn1SccDestinationAddress* I
                                               asn1SccByte* OUT_status)
 {
     volatile uint32_t* address = (uint32_t*)((uint32_t)*IN_address);
-    volatile uint32_t newValue = ((uint32_t)IN_value) & ((uint32_t)*IN_mask);
+    volatile uint32_t newValue = ((uint32_t)*IN_value) & ((uint32_t)*IN_mask);
     volatile uint32_t result = 1;
     /// Write
     __asm volatile("    strex   %[result],  %[newValue], [%[address]] \n\r"
