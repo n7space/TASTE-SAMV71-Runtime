@@ -38,9 +38,10 @@ extern "C"
     void hwas_PI_RawMemoryAccess_ExclusiveReadWord_Pi(const asn1SccSourceAddress*,
                                                       const asn1SccWordMask*,
                                                       asn1SccWord*);
-    bool hwas_PI_RawMemoryAccess_ExclusiveWriteWord_Pi(const asn1SccDestinationAddress*,
+    void hwas_PI_RawMemoryAccess_ExclusiveWriteWord_Pi(const asn1SccDestinationAddress*,
                                                        const asn1SccWordMask*,
-                                                       const asn1SccWord*);
+                                                       const asn1SccWord*,
+                                                       asn1SccByte*);
 
     /* Required interfaces */
     extern void hwas_RI_InterruptSubscription_Interrupt_Ri(const asn1SccInterrupt_Type*);

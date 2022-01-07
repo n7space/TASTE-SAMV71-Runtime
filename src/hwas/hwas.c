@@ -296,10 +296,11 @@ hwas_PI_RawMemoryAccess_ExclusiveReadWord_Pi(const asn1SccSourceAddress* IN_addr
     *addressOut = maskValue & memVal;
 }
 
-bool
+void
 hwas_PI_RawMemoryAccess_ExclusiveWriteWord_Pi(const asn1SccDestinationAddress* IN_address,
                                               const asn1SccWordMask* IN_mask,
-                                              const asn1SccWord* IN_value)
+                                              const asn1SccWord* IN_value,
+                                              asn1SccByte* OUT_status)
 {
     volatile uint32_t* address = (uint32_t*)((uint32_t)*IN_address);
     volatile uint32_t newValue;
@@ -310,5 +311,5 @@ hwas_PI_RawMemoryAccess_ExclusiveWriteWord_Pi(const asn1SccDestinationAddress* I
                    : [ result ] "=&r"(result)
                    : [ newValue ] "r"(newValue), [ address ] "r"(address)
                    : "memory");
-    return (result ? true : false);
+    *OUT_status = (asn1SccByte)result;
 }
