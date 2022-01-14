@@ -23,6 +23,12 @@ static sXdmad xdmac;
  */
 #define UART_INTERRUPT_PRIORITY configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY
 
+void
+XDMAC_Handler(void)
+{
+    XDMAD_Handler(&xdmac);
+}
+
 inline static void
 Hal_uart_init_uart0_pio(Pio_Port* const port, Pio_Port_Config* const pioConfigTx, Pio_Port_Config* const pioConfigRx)
 {
@@ -221,8 +227,30 @@ Hal_uart_init(Hal_Uart* const halUart, Hal_Uart_Config halUartConfig)
 void
 Hal_uart_write(Hal_Uart* const halUart, uint8_t* const buffer, const uint16_t length, const Uart_TxHandler txHandler)
 {
-    ByteFifo_initFromBytes(&halUart->txFifo, buffer, length);
-    Uart_writeAsync(&halUart->uart, &halUart->txFifo, txHandler);
+    uint32_t channelNumber = XDMAD_AllocateChannel(&xdmac, XDMAD_TRANSFER_MEMORY, Pmc_PeripheralId_Uart4);
+    XDMAD_PrepareChannel(&xdmac, channelNumber);
+
+    uint32_t periphID = xdmac.XdmaChannels[channelNumber].bDstTxIfID << XDMAC_CC_PERID_Pos;
+
+    sXdmadCfg config = {
+        .mbr_ubc = length,
+        .mbr_sa = (uint32_t)buffer,
+        .mbr_da = (uint32_t)&halUart->uart.reg->thr,
+        .mbr_cfg = XDMAC_CC_TYPE_PER_TRAN | XDMAC_CC_MBSIZE_SINGLE | XDMAC_CC_DSYNC_MEM2PER
+                   | XDMAC_CC_SWREQ_HWR_CONNECTED | XDMAC_CC_MEMSET_NORMAL_MODE | XDMAC_CC_DWIDTH_BYTE
+                   | XDMAC_CC_SIF_AHB_IF1 | XDMAC_CC_DIF_AHB_IF1 | XDMAC_CC_SAM_INCREMENTED_AM | XDMAC_CC_DAM_FIXED_AM
+                   | periphID,
+        .mbr_bc = 0,
+        .mbr_ds = 0,
+        .mbr_sus = 0,
+        .mbr_dus = 0,
+    };
+    XDMAD_ConfigureTransfer(
+            &xdmac, channelNumber, &config, 0, 0, XDMAC_CIE_BIE | XDMAC_CIE_RBIE | XDMAC_CIE_WBIE | XDMAC_CIE_ROIE);
+    XDMAD_SetCallback(&xdmac, channelNumber, NULL, NULL);
+    XDMAD_StartTransfer(&xdmac, channelNumber);
+    // ByteFifo_initFromBytes(&halUart->txFifo, buffer, length);
+    // Uart_writeAsync(&halUart->uart, &halUart->txFifo, txHandler);
 }
 
 void
