@@ -71,7 +71,13 @@
 #include <Pmc/Pmc.h>
 #include <Scb/Scb.h>
 
+#include <FreeRTOS.h>
+#include <semphr.h>
+
 static uint8_t xDmad_Initialized = 0;
+
+static SemaphoreHandle_t xDmad_Semaphore = NULL;
+static StaticSemaphore_t xDmad_Semaphore_buffer;
 
 /*----------------------------------------------------------------------------
  *        Local macros
@@ -149,9 +155,13 @@ XDMAD_Initialize(sXdmad* pXdmad, uint8_t bPollingMode)
     uint32_t volatile timer = 0x7FF;
 
     assert(pXdmad);
-    // LockMutex(pXdmad->xdmaMutex, timer);
+    if(xDmad_Semaphore == NULL) {
+        xDmad_Semaphore = xSemaphoreCreateBinaryStatic(&xDmad_Semaphore_buffer);
+        xSemaphoreGive(xDmad_Semaphore);
+    }
+    xSemaphoreTake(xDmad_Semaphore, timer);
     if(xDmad_Initialized) {
-        // ReleaseMutex(pXdmad->xdmaMutex);
+        xSemaphoreGive(xDmad_Semaphore);
         return;
     }
     pXdmad->pXdmacs = (Xdmac*)XDMAC;
@@ -172,7 +182,7 @@ XDMAD_Initialize(sXdmad* pXdmad, uint8_t bPollingMode)
         pXdmad->XdmaChannels[j].state = XDMAD_STATE_FREE;
     }
     xDmad_Initialized = 1;
-    // ReleaseMutex(pXdmad->xdmaMutex);
+    xSemaphoreGive(xDmad_Semaphore);
 }
 
 /**
@@ -188,10 +198,11 @@ XDMAD_AllocateChannel(sXdmad* pXdmad, uint8_t bSrcID, uint8_t bDstID)
 {
     uint32_t dwChannel = XDMAD_ALLOC_FAILED;
     uint32_t volatile timer = 0x7FF;
+    assert(xDmad_Semaphore);
 
-    // LockMutex(pXdmad->xdmaMutex, timer);
+    xSemaphoreTake(xDmad_Semaphore, timer);
     dwChannel = XDMAD_AllocateXdmacChannel(pXdmad, bSrcID, bDstID);
-    // ReleaseMutex(pXdmad->xdmaMutex);
+    xSemaphoreGive(xDmad_Semaphore);
 
     return dwChannel;
 }
