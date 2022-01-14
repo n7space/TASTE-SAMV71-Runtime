@@ -245,12 +245,12 @@ Hal_uart_write(Hal_Uart* const halUart, uint8_t* const buffer, const uint16_t le
         .mbr_sus = 0,
         .mbr_dus = 0,
     };
+
     XDMAD_ConfigureTransfer(
             &xdmac, channelNumber, &config, 0, 0, XDMAC_CIE_BIE | XDMAC_CIE_RBIE | XDMAC_CIE_WBIE | XDMAC_CIE_ROIE);
-    XDMAD_SetCallback(&xdmac, channelNumber, NULL, NULL);
+    XdmadTransferCallback ptr = (XdmadTransferCallback)(txHandler.callback);
+    XDMAD_SetCallback(&xdmac, channelNumber, ptr, txHandler.arg);
     XDMAD_StartTransfer(&xdmac, channelNumber);
-    // ByteFifo_initFromBytes(&halUart->txFifo, buffer, length);
-    // Uart_writeAsync(&halUart->uart, &halUart->txFifo, txHandler);
 }
 
 void
