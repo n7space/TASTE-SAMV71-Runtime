@@ -1,4 +1,5 @@
 #include "Hal.h"
+#include "Xdmac/xdmad.h"
 #include "UsartRegisters.h"
 
 #include "assert.h"
@@ -10,6 +11,8 @@
 #include "FreeRTOSConfig.h"
 
 #define USART_BAUD_RATE 115200
+
+static sXdmad xdmac;
 
 /**
  * @brief UART priotity definition
@@ -177,12 +180,25 @@ Hal_uart_init_nvic(Uart_Id id)
     }
 }
 
+static inline void
+Hal_uart_init_dma(void)
+{
+    Pmc_enablePeripheralClk(Pmc_PeripheralId_Xdmac);
+
+    Nvic_clearInterruptPending(Nvic_Irq_Xdmac);
+    Nvic_setInterruptPriority(Nvic_Irq_Xdmac, 0);
+    Nvic_enableInterrupt(Nvic_Irq_Xdmac);
+
+    XDMAD_Initialize(&xdmac, 0);
+}
+
 void
 Hal_uart_init(Hal_Uart* const halUart, Hal_Uart_Config halUartConfig)
 {
     assert(halUartConfig.id <= Uart_Id_4);
     assert((halUartConfig.parity <= Uart_Parity_Odd) || (halUartConfig.parity == Uart_Parity_None));
 
+    // init uart
     Hal_uart_init_pmc(halUartConfig.id);
     Hal_uart_init_pio(halUartConfig.id);
     Hal_uart_init_nvic(halUartConfig.id);
@@ -198,6 +214,8 @@ Hal_uart_init(Hal_Uart* const halUart, Hal_Uart_Config halUartConfig)
                            .baudRateClkSrc = Uart_BaudRateClk_PeripheralCk,
                            .baudRateClkFreq = SystemConfig_DefaultPeriphClock };
     Uart_setConfig(&halUart->uart, &config);
+
+    Hal_uart_init_dma();
 }
 
 void
