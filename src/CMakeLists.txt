@@ -1,4 +1,5 @@
 add_subdirectory(app)
+add_subdirectory(uartXdmacDemo)
 add_subdirectory(Init)
 add_subdirectory(Hal)
 add_subdirectory(hwas)
