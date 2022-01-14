@@ -3,8 +3,10 @@ project(Samv71RuntimeXdmad VERSION 1.0.0 LANGUAGES C)
 add_library(Samv71RuntimeXdmad STATIC)
 target_sources(Samv71RuntimeXdmad
     PRIVATE     xdma_hardware_interface.c
+                xdmac.c
                 xdmad.c
     PUBLIC      xdmad.h
+                xdmac.h
                 xdma_hardware_interface.h)
 target_include_directories(Samv71RuntimeXdmad
     PRIVATE     ${CMAKE_CURRENT_SOURCE_DIR}/..)
