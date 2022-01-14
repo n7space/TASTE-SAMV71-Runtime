@@ -159,11 +159,13 @@ XDMAD_Initialize(sXdmad* pXdmad, uint8_t bPollingMode)
         xDmad_Semaphore = xSemaphoreCreateBinaryStatic(&xDmad_Semaphore_buffer);
         xSemaphoreGive(xDmad_Semaphore);
     }
+
     xSemaphoreTake(xDmad_Semaphore, timer);
     if(xDmad_Initialized) {
         xSemaphoreGive(xDmad_Semaphore);
         return;
     }
+
     pXdmad->pXdmacs = (Xdmac*)XDMAC;
     pXdmad->pollingMode = bPollingMode;
     pXdmad->numControllers = XDMAC_CONTROLLER_NUM;

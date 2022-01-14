@@ -314,7 +314,7 @@ XDMAC_SoftwareFlushReq(Xdmac* pXdmac, uint8_t channel)
     assert(pXdmac);
     assert(channel < XDMAC_CHANNEL_NUM);
     pXdmac->XDMAC_GSWF = (XDMAC_GSWF_SWF0 << channel);
-    while (!(XDMAC_GetChannelIsr(pXdmac, channel) & XDMAC_CIS_FIS))
+    while(!(XDMAC_GetChannelIsr(pXdmac, channel) & XDMAC_CIS_FIS))
         ;
 }
 
