@@ -192,7 +192,7 @@ Hal_uart_init_dma(void)
     Pmc_enablePeripheralClk(Pmc_PeripheralId_Xdmac);
 
     Nvic_clearInterruptPending(Nvic_Irq_Xdmac);
-    Nvic_setInterruptPriority(Nvic_Irq_Xdmac, 0);
+    Nvic_setInterruptPriority(Nvic_Irq_Xdmac, 2);
     Nvic_enableInterrupt(Nvic_Irq_Xdmac);
 
     XDMAD_Initialize(&xdmac, 0);
