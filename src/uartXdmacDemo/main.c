@@ -1,20 +1,13 @@
 #include "FreeRTOS.h"
 #include "task.h"
-#include "queue.h"
 #include "semphr.h"
-
-#include <Uart/Uart.h>
-#include <Xdmac/xdmad.h>
-#include <Nvic/Nvic.h>
-#include <Pmc/Pmc.h>
 
 #include <Init/Init.h>
 #include <Hal/Hal.h>
+#include <Xdmac/xdmad.h>
 
 #include <assert.h>
 #include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
 
 /// FreeRTOS functions declaration
 void vApplicationMallocFailedHook();
