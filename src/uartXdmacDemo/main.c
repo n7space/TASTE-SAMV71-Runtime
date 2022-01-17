@@ -39,6 +39,7 @@ Uart_TxHandler txHandler = {
     .arg = &halUart,
 };
 
+// Callbacks and callback helper function
 static ByteFifo*
 UartTxCallback(void* private_data)
 {
@@ -82,13 +83,6 @@ my_fault_handler_c(sContextStateFrame* frame)
     // If and only if a debugger is attached, execute a breakpoint
     // instruction so we can take a look at what triggered the fault
     HALT_IF_DEBUGGING();
-
-    // Logic for dealing with the exception. Typically:
-    //  - log the fault which occurred for postmortem analysis
-    //  - If the fault is recoverable,
-    //    - clear errors and return back to Thread Mode
-    //  - else
-    //    - reboot system
 }
 
 void
@@ -138,6 +132,7 @@ prvTask1(void* pvParameters)
     }
 }
 
+/// Free RTOS function definitions
 void
 vApplicationMallocFailedHook()
 {
@@ -165,6 +160,7 @@ vApplicationTickHook()
 {
 }
 
+/// Helper function definitions:
 void
 Gen_array(uint8_t* const src_buf, const size_t size)
 {
