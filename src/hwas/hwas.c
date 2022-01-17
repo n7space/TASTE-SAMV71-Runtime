@@ -216,8 +216,12 @@ void
 hwas_PI_InterruptManagement_DisableInterrupt_Pi(const asn1SccInterruptNumber* IN_interrupt)
 {
     Nvic_Irq irqNumber = (Nvic_Irq)*IN_interrupt;
-    if(irqNumber != Nvic_Irq_Usart1) {
-        Nvic_disableInterrupt(irqNumber);
+    switch(irqNumber) {
+        case Nvic_Irq_Usart1:
+        case Nvic_Irq_Xdmac:
+            break;
+        default:
+            Nvic_disableInterrupt(irqNumber);
     }
 }
 
@@ -225,9 +229,13 @@ void
 hwas_PI_InterruptManagement_EnableInterrupt_Pi(const asn1SccInterruptNumber* IN_interrupt)
 {
     Nvic_Irq irqNumber = (Nvic_Irq)*IN_interrupt;
-    if(irqNumber != Nvic_Irq_Usart1) {
-        Nvic_setInterruptPriority(irqNumber, PERIPH_INTERRUPT_PRIORITY);
-        Nvic_enableInterrupt(irqNumber);
+    switch(irqNumber) {
+        case Nvic_Irq_Usart1:
+        case Nvic_Irq_Xdmac:
+            break;
+        default:
+            Nvic_setInterruptPriority(irqNumber, PERIPH_INTERRUPT_PRIORITY);
+            Nvic_enableInterrupt(irqNumber);
     }
 }
 
