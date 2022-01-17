@@ -22,6 +22,9 @@ static sXdmad xdmac;
  * must be equal or greater then configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY.
  */
 #define UART_INTERRUPT_PRIORITY configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY
+#define UART_XDMAC_INTERRUPT_PRIORITY UART_INTERRUPT_PRIORITY
+
+#define XDMAD_NO_POLLING 0
 
 void
 XDMAC_Handler(void)
@@ -200,10 +203,10 @@ Hal_uart_init_dma(void)
     Pmc_enablePeripheralClk(Pmc_PeripheralId_Xdmac);
 
     Nvic_clearInterruptPending(Nvic_Irq_Xdmac);
-    Nvic_setInterruptPriority(Nvic_Irq_Xdmac, 2);
+    Nvic_setInterruptPriority(Nvic_Irq_Xdmac, UART_XDMAC_INTERRUPT_PRIORITY);
     Nvic_enableInterrupt(Nvic_Irq_Xdmac);
 
-    XDMAD_Initialize(&xdmac, 0);
+    XDMAD_Initialize(&xdmac, XDMAD_NO_POLLING);
 }
 
 void
