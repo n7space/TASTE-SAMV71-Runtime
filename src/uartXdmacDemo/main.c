@@ -25,7 +25,7 @@ void Gen_array(uint8_t* const src_buf, const size_t size);
 #define TASK1_PIORITY 2
 
 /** The buffer size for transfer  */
-#define BUFFER_SIZE 90
+#define BUFFER_SIZE UINT16_MAX
 
 static uint8_t src_buf[BUFFER_SIZE];
 
@@ -158,8 +158,12 @@ vApplicationTickHook()
 void
 Gen_array(uint8_t* const src_buf, const size_t size)
 {
-    /* Initialize source and destination buffer */
+    /**
+     * @brief Initialize source and destination buffer
+     * Generate ASCII symbols from '!' to '~'
+     *
+     */
     for(int i = 0; i < size; i++) {
-        src_buf[i] = '!' + i;
+        src_buf[i] = '!' + (i % ('~' - '!'));
     }
 }
