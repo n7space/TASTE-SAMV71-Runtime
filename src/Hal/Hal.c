@@ -3,6 +3,7 @@
 #include "UsartRegisters.h"
 
 #include "assert.h"
+#include "string.h"
 
 #include "Pio/Pio.h"
 #include "Nvic/Nvic.h"
@@ -25,6 +26,7 @@ static sXdmad xdmad;
 #define UART_XDMAC_INTERRUPT_PRIORITY UART_INTERRUPT_PRIORITY
 
 #define XDMAD_NO_POLLING 0
+#define UART_XDMAD_ERROR_NO_AVALIABLE_CHANNELS "Hal.c Hal_uartWrite: The xdmac channels are not avaliable."
 
 void
 XDMAC_Handler(void)
@@ -245,7 +247,7 @@ Hal_uart_write(Hal_Uart* const halUart,
     if(channelNumber < (xdmad.pXdmacs->XDMAC_GTYPE & XDMAC_GTYPE_NB_CH_Msk)) {
         XDMAD_PrepareChannel(&xdmad, channelNumber);
 
-        uint32_t periphID = xdmad.XdmaChannels[channelNumber].bDstTxIfID << XDMAC_CC_PERID_Pos; 
+        uint32_t periphID = xdmad.XdmaChannels[channelNumber].bDstTxIfID << XDMAC_CC_PERID_Pos;
         sXdmadCfg config = {
             .mbr_ubc = length,
             .mbr_sa = (uint32_t)buffer,
@@ -265,7 +267,8 @@ Hal_uart_write(Hal_Uart* const halUart,
         XDMAD_SetCallback(&xdmad, channelNumber, Hal_uart_xdmad_handler, (void*)txHandler);
         XDMAD_StartTransfer(&xdmad, channelNumber);
     } else {
-        Hal_console_usart_write("Wrong channel number\n\r", 22);
+        Hal_console_usart_write((uint8_t*)UART_XDMAD_ERROR_NO_AVALIABLE_CHANNELS,
+                                strlen(UART_XDMAD_ERROR_NO_AVALIABLE_CHANNELS));
     }
 }
 
