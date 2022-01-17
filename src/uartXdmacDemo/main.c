@@ -94,7 +94,7 @@ prvTask1(void* pvParameters)
 {
     while(1) {
         xSemaphoreTake(uartSemaphore, portMAX_DELAY);
-        Hal_uart_write(&halUart, src_buf, BUFFER_SIZE, m_uart_tx_handler);
+        Hal_uart_write(&halUart, src_buf, BUFFER_SIZE, &m_uart_tx_handler);
     }
 }
 

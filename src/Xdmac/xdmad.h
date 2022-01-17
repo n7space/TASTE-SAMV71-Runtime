@@ -109,7 +109,7 @@ typedef enum _XdmadProgState
 } eXdmadProgState;
 
 /** DMA transfer callback */
-typedef void (*XdmadTransferCallback)(void* pArg);
+typedef void (*XdmadTransferCallback)(uint32_t iChannel, void* pArg);
 
 /** DMA driver channel */
 typedef struct _XdmadChannel

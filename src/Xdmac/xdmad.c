@@ -363,12 +363,12 @@ XDMAD_Handler(sXdmad* pDmad)
                 /* Block end interrupt for LLI dma mode */
                 if(XDMAC_GetChannelIsr(pXdmac, _iChannel) & XDMAC_CIS_BIS) {
                     /* Execute callback */
-                    pCh->fCallback(pCh->pArg);
+                    pCh->fCallback(_iChannel, pCh->pArg);
                 }
             }
             /* Execute callback */
             if(bExec && pCh->fCallback) {
-                pCh->fCallback(pCh->pArg);
+                pCh->fCallback(_iChannel, pCh->pArg);
             }
         }
     }

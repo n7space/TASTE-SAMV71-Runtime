@@ -54,7 +54,7 @@ void Hal_uart_init(Hal_Uart* const halUart, Hal_Uart_Config halUartConfig);
 void Hal_uart_write(Hal_Uart* const halUart,
                     uint8_t* const buffer,
                     const uint16_t length,
-                    const Uart_TxHandler txHandler);
+                    const Uart_TxHandler* const txHandler);
 
 /// \brief Asynchronously receives bytes over uart.
 /// \param [in] halUart Hal_Uart structure contains uart device descriptor and relevant fifos.

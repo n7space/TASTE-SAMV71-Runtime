@@ -29,6 +29,14 @@ XDMAC_Handler(void)
     XDMAD_Handler(&xdmac);
 }
 
+void
+Hal_uart_xdmad_handler(uint32_t xdmacChannel, void* args)
+{
+    XDMAD_FreeChannel(&xdmac, xdmacChannel);
+    Uart_TxHandler* uartTxHandler = (Uart_TxHandler*)args;
+    uartTxHandler->callback(uartTxHandler->arg);
+}
+
 inline static void
 Hal_uart_init_uart0_pio(Pio_Port* const port, Pio_Port_Config* const pioConfigTx, Pio_Port_Config* const pioConfigRx)
 {
@@ -225,7 +233,10 @@ Hal_uart_init(Hal_Uart* const halUart, Hal_Uart_Config halUartConfig)
 }
 
 void
-Hal_uart_write(Hal_Uart* const halUart, uint8_t* const buffer, const uint16_t length, const Uart_TxHandler txHandler)
+Hal_uart_write(Hal_Uart* const halUart,
+               uint8_t* const buffer,
+               const uint16_t length,
+               const Uart_TxHandler* const txHandler)
 {
     uint32_t channelNumber = XDMAD_AllocateChannel(&xdmac, XDMAD_TRANSFER_MEMORY, Pmc_PeripheralId_Uart4);
     XDMAD_PrepareChannel(&xdmac, channelNumber);
@@ -248,8 +259,7 @@ Hal_uart_write(Hal_Uart* const halUart, uint8_t* const buffer, const uint16_t le
 
     XDMAD_ConfigureTransfer(
             &xdmac, channelNumber, &config, 0, 0, XDMAC_CIE_BIE | XDMAC_CIE_RBIE | XDMAC_CIE_WBIE | XDMAC_CIE_ROIE);
-    XdmadTransferCallback ptr = (XdmadTransferCallback)(txHandler.callback);
-    XDMAD_SetCallback(&xdmac, channelNumber, ptr, txHandler.arg);
+    XDMAD_SetCallback(&xdmac, channelNumber, Hal_uart_xdmad_handler, (void*)txHandler);
     XDMAD_StartTransfer(&xdmac, channelNumber);
 }
 

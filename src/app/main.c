@@ -167,7 +167,7 @@ void
 consoleWrite(uint8_t* buffer, uint16_t size)
 {
     xSemaphoreTake(binarySemaphore, portMAX_DELAY);
-    Hal_uart_write(&halUart, buffer, size, txHandler);
+    Hal_uart_write(&halUart, buffer, size, &txHandler);
 }
 
 ByteFifo*
