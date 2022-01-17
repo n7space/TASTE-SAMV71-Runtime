@@ -32,10 +32,6 @@ static uint8_t src_buf[BUFFER_SIZE];
 static SemaphoreHandle_t uartSemaphore = NULL;
 static StaticSemaphore_t uartSemaphore_buffer;
 
-volatile bool memToMemPassed = false;
-volatile bool memToPeriphPassed = false;
-
-sXdmad xdmac;
 Hal_Uart halUart;
 
 Uart_TxHandler txHandler = {
