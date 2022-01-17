@@ -253,16 +253,18 @@ Hal_uart_write_init_xdmac_channel(Hal_Uart* const halUart,
 {
     XDMAD_PrepareChannel(&xdmad, channelNumber);
 
+    //< Get Uart Tx peripheral xdmac id
     uint32_t periphID = xdmad.XdmaChannels[channelNumber].bDstTxIfID << XDMAC_CC_PERID_Pos;
     sXdmadCfg config = {
-        .mbr_ubc = length,
-        .mbr_sa = (uint32_t)buffer,
-        .mbr_da = (uint32_t)&halUart->uart.reg->thr,
+        .mbr_ubc = length, //< uBlock max length is equal to uart write max data length. Thus one uBlock can be used.
+        .mbr_sa = (uint32_t)buffer,                  //< Data buffer as source addres
+        .mbr_da = (uint32_t)&halUart->uart.reg->thr, //< Uart tx holding register as a destination address
         .mbr_cfg = XDMAC_CC_TYPE_PER_TRAN | XDMAC_CC_MBSIZE_SINGLE | XDMAC_CC_DSYNC_MEM2PER
                    | XDMAC_CC_SWREQ_HWR_CONNECTED | XDMAC_CC_MEMSET_NORMAL_MODE | XDMAC_CC_DWIDTH_BYTE
                    | XDMAC_CC_SIF_AHB_IF1 | XDMAC_CC_DIF_AHB_IF1 | XDMAC_CC_SAM_INCREMENTED_AM | XDMAC_CC_DAM_FIXED_AM
-                   | periphID,
-        .mbr_bc = 0,
+                   | periphID, //< Config memory to peripheral transfer. Increment source buffer address. Keep
+                               // desitnation address buffer fixed
+        .mbr_bc = 0,           //< do not add any data stride
         .mbr_ds = 0,
         .mbr_sus = 0,
         .mbr_dus = 0,
