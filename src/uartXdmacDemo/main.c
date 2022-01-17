@@ -96,12 +96,6 @@ Uart_TxHandler m_uart_tx_handler = {
     .arg = NULL,
 };
 
-void
-UART4_Handler(void)
-{
-    Uart_handleInterrupt(&halUart.uart);
-}
-
 int
 main()
 {
