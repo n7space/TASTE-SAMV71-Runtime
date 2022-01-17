@@ -12,7 +12,7 @@
 
 #define USART_BAUD_RATE 115200
 
-static sXdmad xdmac;
+static sXdmad xdmad;
 
 /**
  * @brief UART priotity definition
@@ -29,13 +29,13 @@ static sXdmad xdmac;
 void
 XDMAC_Handler(void)
 {
-    XDMAD_Handler(&xdmac);
+    XDMAD_Handler(&xdmad);
 }
 
 void
 Hal_uart_xdmad_handler(uint32_t xdmacChannel, void* args)
 {
-    XDMAD_FreeChannel(&xdmac, xdmacChannel);
+    XDMAD_FreeChannel(&xdmad, xdmacChannel);
     Uart_TxHandler* uartTxHandler = (Uart_TxHandler*)args;
     uartTxHandler->callback(uartTxHandler->arg);
 }
@@ -206,7 +206,7 @@ Hal_uart_init_dma(void)
     Nvic_setInterruptPriority(Nvic_Irq_Xdmac, UART_XDMAC_INTERRUPT_PRIORITY);
     Nvic_enableInterrupt(Nvic_Irq_Xdmac);
 
-    XDMAD_Initialize(&xdmac, XDMAD_NO_POLLING);
+    XDMAD_Initialize(&xdmad, XDMAD_NO_POLLING);
 }
 
 void
@@ -241,10 +241,10 @@ Hal_uart_write(Hal_Uart* const halUart,
                const uint16_t length,
                const Uart_TxHandler* const txHandler)
 {
-    uint32_t channelNumber = XDMAD_AllocateChannel(&xdmac, XDMAD_TRANSFER_MEMORY, Pmc_PeripheralId_Uart4);
-    XDMAD_PrepareChannel(&xdmac, channelNumber);
+    uint32_t channelNumber = XDMAD_AllocateChannel(&xdmad, XDMAD_TRANSFER_MEMORY, Pmc_PeripheralId_Uart4);
+    XDMAD_PrepareChannel(&xdmad, channelNumber);
 
-    uint32_t periphID = xdmac.XdmaChannels[channelNumber].bDstTxIfID << XDMAC_CC_PERID_Pos;
+    uint32_t periphID = xdmad.XdmaChannels[channelNumber].bDstTxIfID << XDMAC_CC_PERID_Pos;
 
     sXdmadCfg config = {
         .mbr_ubc = length,
@@ -261,9 +261,9 @@ Hal_uart_write(Hal_Uart* const halUart,
     };
 
     XDMAD_ConfigureTransfer(
-            &xdmac, channelNumber, &config, 0, 0, XDMAC_CIE_BIE | XDMAC_CIE_RBIE | XDMAC_CIE_WBIE | XDMAC_CIE_ROIE);
-    XDMAD_SetCallback(&xdmac, channelNumber, Hal_uart_xdmad_handler, (void*)txHandler);
-    XDMAD_StartTransfer(&xdmac, channelNumber);
+            &xdmad, channelNumber, &config, 0, 0, XDMAC_CIE_BIE | XDMAC_CIE_RBIE | XDMAC_CIE_WBIE | XDMAC_CIE_ROIE);
+    XDMAD_SetCallback(&xdmad, channelNumber, Hal_uart_xdmad_handler, (void*)txHandler);
+    XDMAD_StartTransfer(&xdmad, channelNumber);
 }
 
 void
