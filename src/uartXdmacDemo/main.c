@@ -111,7 +111,7 @@ main()
     uartSemaphore = xSemaphoreCreateBinaryStatic(&uartSemaphore_buffer);
     xSemaphoreGive(uartSemaphore);
     Gen_array(src_buf, BUFFER_SIZE);
-    xTaskCreate(prvTask1, "Task1", 3 * configMINIMAL_STACK_SIZE, NULL, TASK1_PIORITY, NULL);
+    xTaskCreate(prvTask1, "Task1", configMINIMAL_STACK_SIZE, NULL, TASK1_PIORITY, NULL);
     vTaskStartScheduler();
 
     return EXIT_SUCCESS;
