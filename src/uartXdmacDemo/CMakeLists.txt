@@ -9,7 +9,6 @@ target_link_libraries(uartXdmacDemo
     PRIVATE     SAMV71::Startup
                 SAMV71::Runtime::Init
                 SAMV71::Runtime::Xdmad
-                SAMV71::Uart
                 SAMV71::FreeRTOS
                 SAMV71::Runtime::Hal)
 target_link_options(uartXdmacDemo
