@@ -101,6 +101,54 @@ Hal_uart_init_uart4_pio(Pio_Port* const port, Pio_Port_Config* const pioConfigTx
     pioConfigTx->pinsConfig.control = Pio_Control_PeripheralC;
 }
 
+static inline Pmc_PeripheralId
+Hal_get_periph_uart_id(Uart_Id id)
+{
+    switch(id) {
+        case Uart_Id_0:
+            return Pmc_PeripheralId_Uart0;
+        case Uart_Id_1:
+            return Pmc_PeripheralId_Uart1;
+        case Uart_Id_2:
+            return Pmc_PeripheralId_Uart2;
+        case Uart_Id_3:
+            return Pmc_PeripheralId_Uart3;
+        case Uart_Id_4:
+            return Pmc_PeripheralId_Uart4;
+    }
+}
+
+static inline Pmc_PeripheralId
+Hal_get_periph_uart_pio_id(Uart_Id id)
+{
+    switch(id) {
+        case Uart_Id_0:
+        case Uart_Id_1:
+            return Pmc_PeripheralId_PioA;
+        case Uart_Id_2:
+        case Uart_Id_3:
+        case Uart_Id_4:
+            return Pmc_PeripheralId_PioD;
+    }
+}
+
+static inline Uart_Id
+Hal_get_nvic_uart_id(Uart_Id id)
+{
+    switch(id) {
+        case Uart_Id_0:
+            return Nvic_Irq_Uart0;
+        case Uart_Id_1:
+            return Nvic_Irq_Uart1;
+        case Uart_Id_2:
+            return Nvic_Irq_Uart2;
+        case Uart_Id_3:
+            return Nvic_Irq_Uart3;
+        case Uart_Id_4:
+            return Nvic_Irq_Uart4;
+    }
+}
+
 static inline void
 Hal_uart_init_pio(Uart_Id id)
 {
@@ -147,56 +195,15 @@ Hal_uart_init_pio(Uart_Id id)
 inline static void
 Hal_uart_init_pmc(Uart_Id id)
 {
-    switch(id) {
-        case Uart_Id_0:
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_PioA);
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart0);
-            break;
-        case Uart_Id_1:
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_PioA);
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart1);
-            break;
-        case Uart_Id_2:
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_PioD);
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart2);
-            break;
-        case Uart_Id_3:
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_PioD);
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart3);
-            break;
-        case Uart_Id_4:
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_PioD);
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart4);
-            break;
-    }
+    Pmc_enablePeripheralClk(Hal_get_periph_uart_pio_id(id));
+    Pmc_enablePeripheralClk(Hal_get_periph_uart_id(id));
 }
 
 inline static void
 Hal_uart_init_nvic(Uart_Id id)
 {
-    switch(id) {
-        case Uart_Id_0:
-            Nvic_enableInterrupt(Nvic_Irq_Uart0);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart0, UART_INTERRUPT_PRIORITY);
-            break;
-        case Uart_Id_1:
-            Nvic_enableInterrupt(Nvic_Irq_Uart1);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart1, UART_INTERRUPT_PRIORITY);
-            break;
-        case Uart_Id_2:
-            Nvic_enableInterrupt(Nvic_Irq_Uart2);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart2, UART_INTERRUPT_PRIORITY);
-            ;
-            break;
-        case Uart_Id_3:
-            Nvic_enableInterrupt(Nvic_Irq_Uart3);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart3, UART_INTERRUPT_PRIORITY);
-            break;
-        case Uart_Id_4:
-            Nvic_enableInterrupt(Nvic_Irq_Uart4);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart4, UART_INTERRUPT_PRIORITY);
-            break;
-    }
+    Nvic_enableInterrupt(Hal_get_nvic_uart_id(id));
+    Nvic_setInterruptPriority(Hal_get_nvic_uart_id(id), UART_INTERRUPT_PRIORITY);
 }
 
 static inline void
@@ -272,7 +279,8 @@ Hal_uart_write(Hal_Uart* const halUart,
                const uint16_t length,
                const Uart_TxHandler* const txHandler)
 {
-    uint32_t channelNumber = XDMAD_AllocateChannel(&xdmad, XDMAD_TRANSFER_MEMORY, Pmc_PeripheralId_Uart4);
+    uint32_t channelNumber =
+            XDMAD_AllocateChannel(&xdmad, XDMAD_TRANSFER_MEMORY, Hal_get_nvic_uart_id(halUart->uart.id));
     if(channelNumber < (xdmad.pXdmacs->XDMAC_GTYPE & XDMAC_GTYPE_NB_CH_Msk)) {
         Hal_uart_write_init_xdmac_channel(halUart, buffer, length, txHandler, channelNumber);
         XDMAD_StartTransfer(&xdmad, channelNumber);
