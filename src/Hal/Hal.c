@@ -237,6 +237,35 @@ Hal_uart_init(Hal_Uart* const halUart, Hal_Uart_Config halUartConfig)
     Hal_uart_init_dma();
 }
 
+static inline void
+Hal_uart_write_init_xdmac_channel(Hal_Uart* const halUart,
+                                  uint8_t* const buffer,
+                                  const uint16_t length,
+                                  const Uart_TxHandler* const txHandler,
+                                  uint32_t channelNumber)
+{
+    XDMAD_PrepareChannel(&xdmad, channelNumber);
+
+    uint32_t periphID = xdmad.XdmaChannels[channelNumber].bDstTxIfID << XDMAC_CC_PERID_Pos;
+    sXdmadCfg config = {
+        .mbr_ubc = length,
+        .mbr_sa = (uint32_t)buffer,
+        .mbr_da = (uint32_t)&halUart->uart.reg->thr,
+        .mbr_cfg = XDMAC_CC_TYPE_PER_TRAN | XDMAC_CC_MBSIZE_SINGLE | XDMAC_CC_DSYNC_MEM2PER
+                   | XDMAC_CC_SWREQ_HWR_CONNECTED | XDMAC_CC_MEMSET_NORMAL_MODE | XDMAC_CC_DWIDTH_BYTE
+                   | XDMAC_CC_SIF_AHB_IF1 | XDMAC_CC_DIF_AHB_IF1 | XDMAC_CC_SAM_INCREMENTED_AM | XDMAC_CC_DAM_FIXED_AM
+                   | periphID,
+        .mbr_bc = 0,
+        .mbr_ds = 0,
+        .mbr_sus = 0,
+        .mbr_dus = 0,
+    };
+
+    XDMAD_ConfigureTransfer(
+            &xdmad, channelNumber, &config, 0, 0, XDMAC_CIE_BIE | XDMAC_CIE_RBIE | XDMAC_CIE_WBIE | XDMAC_CIE_ROIE);
+    XDMAD_SetCallback(&xdmad, channelNumber, Hal_uart_xdmad_handler, (void*)txHandler);
+}
+
 void
 Hal_uart_write(Hal_Uart* const halUart,
                uint8_t* const buffer,
@@ -245,26 +274,7 @@ Hal_uart_write(Hal_Uart* const halUart,
 {
     uint32_t channelNumber = XDMAD_AllocateChannel(&xdmad, XDMAD_TRANSFER_MEMORY, Pmc_PeripheralId_Uart4);
     if(channelNumber < (xdmad.pXdmacs->XDMAC_GTYPE & XDMAC_GTYPE_NB_CH_Msk)) {
-        XDMAD_PrepareChannel(&xdmad, channelNumber);
-
-        uint32_t periphID = xdmad.XdmaChannels[channelNumber].bDstTxIfID << XDMAC_CC_PERID_Pos;
-        sXdmadCfg config = {
-            .mbr_ubc = length,
-            .mbr_sa = (uint32_t)buffer,
-            .mbr_da = (uint32_t)&halUart->uart.reg->thr,
-            .mbr_cfg = XDMAC_CC_TYPE_PER_TRAN | XDMAC_CC_MBSIZE_SINGLE | XDMAC_CC_DSYNC_MEM2PER
-                       | XDMAC_CC_SWREQ_HWR_CONNECTED | XDMAC_CC_MEMSET_NORMAL_MODE | XDMAC_CC_DWIDTH_BYTE
-                       | XDMAC_CC_SIF_AHB_IF1 | XDMAC_CC_DIF_AHB_IF1 | XDMAC_CC_SAM_INCREMENTED_AM
-                       | XDMAC_CC_DAM_FIXED_AM | periphID,
-            .mbr_bc = 0,
-            .mbr_ds = 0,
-            .mbr_sus = 0,
-            .mbr_dus = 0,
-        };
-
-        XDMAD_ConfigureTransfer(
-                &xdmad, channelNumber, &config, 0, 0, XDMAC_CIE_BIE | XDMAC_CIE_RBIE | XDMAC_CIE_WBIE | XDMAC_CIE_ROIE);
-        XDMAD_SetCallback(&xdmad, channelNumber, Hal_uart_xdmad_handler, (void*)txHandler);
+        Hal_uart_write_init_xdmac_channel(halUart, buffer, length, txHandler, channelNumber);
         XDMAD_StartTransfer(&xdmad, channelNumber);
     } else {
         Hal_console_usart_write((uint8_t*)UART_XDMAD_ERROR_NO_AVALIABLE_CHANNELS,
