@@ -41,6 +41,9 @@
 SemaphoreHandle_t broker_lock;
 static StaticSemaphore_t broker_lock_buffer;
 
+SemaphoreHandle_t xdmad_lock = NULL;
+static StaticSemaphore_t xdmad_lock_buffer;
+
 #define UART_BAUDRATE 38400
 
 inline static void
@@ -234,6 +237,13 @@ Init_setup_broker_lock()
     xSemaphoreGive(broker_lock);
 }
 
+inline static void
+Init_setup_xdmad_lock()
+{
+    xdmad_lock = xSemaphoreCreateBinaryStatic(&xdmad_lock_buffer);
+    xSemaphoreGive(xdmad_lock);
+}
+
 void
 Init_setup_hardware(void)
 {
@@ -243,4 +253,5 @@ Init_setup_hardware(void)
     Init_setup_console_usart();
     Init_setup_sdram();
     Init_setup_broker_lock();
+    Init_setup_xdmad_lock();
 }
