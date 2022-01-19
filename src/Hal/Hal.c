@@ -1,7 +1,9 @@
 #include "Hal.h"
+#include "Xdmac/xdmad.h"
 #include "UsartRegisters.h"
 
 #include "assert.h"
+#include "string.h"
 
 #include "Pio/Pio.h"
 #include "Nvic/Nvic.h"
@@ -11,6 +13,8 @@
 
 #define USART_BAUD_RATE 115200
 
+static sXdmad xdmad;
+
 /**
  * @brief UART priotity definition
  * System interrupts priorities levels must be smaller than
@@ -19,6 +23,24 @@
  * must be equal or greater then configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY.
  */
 #define UART_INTERRUPT_PRIORITY configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY
+#define UART_XDMAC_INTERRUPT_PRIORITY UART_INTERRUPT_PRIORITY
+
+#define XDMAD_NO_POLLING 0
+#define UART_XDMAD_ERROR_NO_AVALIABLE_CHANNELS "Hal.c Hal_uartWrite: The xdmac channels are not avaliable."
+
+void
+XDMAC_Handler(void)
+{
+    XDMAD_Handler(&xdmad);
+}
+
+void
+Hal_uart_xdmad_handler(uint32_t xdmacChannel, void* args)
+{
+    XDMAD_FreeChannel(&xdmad, xdmacChannel);
+    Uart_TxHandler* uartTxHandler = (Uart_TxHandler*)args;
+    uartTxHandler->callback(uartTxHandler->arg);
+}
 
 inline static void
 Hal_uart_init_uart0_pio(Pio_Port* const port, Pio_Port_Config* const pioConfigTx, Pio_Port_Config* const pioConfigRx)
@@ -79,6 +101,54 @@ Hal_uart_init_uart4_pio(Pio_Port* const port, Pio_Port_Config* const pioConfigTx
     pioConfigTx->pinsConfig.control = Pio_Control_PeripheralC;
 }
 
+static inline Pmc_PeripheralId
+Hal_get_periph_uart_id(Uart_Id id)
+{
+    switch(id) {
+        case Uart_Id_0:
+            return Pmc_PeripheralId_Uart0;
+        case Uart_Id_1:
+            return Pmc_PeripheralId_Uart1;
+        case Uart_Id_2:
+            return Pmc_PeripheralId_Uart2;
+        case Uart_Id_3:
+            return Pmc_PeripheralId_Uart3;
+        case Uart_Id_4:
+            return Pmc_PeripheralId_Uart4;
+    }
+}
+
+static inline Pmc_PeripheralId
+Hal_get_periph_uart_pio_id(Uart_Id id)
+{
+    switch(id) {
+        case Uart_Id_0:
+        case Uart_Id_1:
+            return Pmc_PeripheralId_PioA;
+        case Uart_Id_2:
+        case Uart_Id_3:
+        case Uart_Id_4:
+            return Pmc_PeripheralId_PioD;
+    }
+}
+
+static inline Uart_Id
+Hal_get_nvic_uart_id(Uart_Id id)
+{
+    switch(id) {
+        case Uart_Id_0:
+            return Nvic_Irq_Uart0;
+        case Uart_Id_1:
+            return Nvic_Irq_Uart1;
+        case Uart_Id_2:
+            return Nvic_Irq_Uart2;
+        case Uart_Id_3:
+            return Nvic_Irq_Uart3;
+        case Uart_Id_4:
+            return Nvic_Irq_Uart4;
+    }
+}
+
 static inline void
 Hal_uart_init_pio(Uart_Id id)
 {
@@ -125,56 +195,27 @@ Hal_uart_init_pio(Uart_Id id)
 inline static void
 Hal_uart_init_pmc(Uart_Id id)
 {
-    switch(id) {
-        case Uart_Id_0:
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_PioA);
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart0);
-            break;
-        case Uart_Id_1:
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_PioA);
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart1);
-            break;
-        case Uart_Id_2:
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_PioD);
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart2);
-            break;
-        case Uart_Id_3:
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_PioD);
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart3);
-            break;
-        case Uart_Id_4:
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_PioD);
-            Pmc_enablePeripheralClk(Pmc_PeripheralId_Uart4);
-            break;
-    }
+    Pmc_enablePeripheralClk(Hal_get_periph_uart_pio_id(id));
+    Pmc_enablePeripheralClk(Hal_get_periph_uart_id(id));
 }
 
 inline static void
 Hal_uart_init_nvic(Uart_Id id)
 {
-    switch(id) {
-        case Uart_Id_0:
-            Nvic_enableInterrupt(Nvic_Irq_Uart0);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart0, UART_INTERRUPT_PRIORITY);
-            break;
-        case Uart_Id_1:
-            Nvic_enableInterrupt(Nvic_Irq_Uart1);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart1, UART_INTERRUPT_PRIORITY);
-            break;
-        case Uart_Id_2:
-            Nvic_enableInterrupt(Nvic_Irq_Uart2);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart2, UART_INTERRUPT_PRIORITY);
-            ;
-            break;
-        case Uart_Id_3:
-            Nvic_enableInterrupt(Nvic_Irq_Uart3);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart3, UART_INTERRUPT_PRIORITY);
-            break;
-        case Uart_Id_4:
-            Nvic_enableInterrupt(Nvic_Irq_Uart4);
-            Nvic_setInterruptPriority(Nvic_Irq_Uart4, UART_INTERRUPT_PRIORITY);
-            break;
-    }
+    Nvic_enableInterrupt(Hal_get_nvic_uart_id(id));
+    Nvic_setInterruptPriority(Hal_get_nvic_uart_id(id), UART_INTERRUPT_PRIORITY);
+}
+
+static inline void
+Hal_uart_init_dma(void)
+{
+    Pmc_enablePeripheralClk(Pmc_PeripheralId_Xdmac);
+
+    Nvic_clearInterruptPending(Nvic_Irq_Xdmac);
+    Nvic_setInterruptPriority(Nvic_Irq_Xdmac, UART_XDMAC_INTERRUPT_PRIORITY);
+    Nvic_enableInterrupt(Nvic_Irq_Xdmac);
+
+    XDMAD_Initialize(&xdmad, XDMAD_NO_POLLING);
 }
 
 void
@@ -183,6 +224,7 @@ Hal_uart_init(Hal_Uart* const halUart, Hal_Uart_Config halUartConfig)
     assert(halUartConfig.id <= Uart_Id_4);
     assert((halUartConfig.parity <= Uart_Parity_Odd) || (halUartConfig.parity == Uart_Parity_None));
 
+    // init uart
     Hal_uart_init_pmc(halUartConfig.id);
     Hal_uart_init_pio(halUartConfig.id);
     Hal_uart_init_nvic(halUartConfig.id);
@@ -198,13 +240,56 @@ Hal_uart_init(Hal_Uart* const halUart, Hal_Uart_Config halUartConfig)
                            .baudRateClkSrc = Uart_BaudRateClk_PeripheralCk,
                            .baudRateClkFreq = SystemConfig_DefaultPeriphClock };
     Uart_setConfig(&halUart->uart, &config);
+
+    Hal_uart_init_dma();
+}
+
+static inline void
+Hal_uart_write_init_xdmac_channel(Hal_Uart* const halUart,
+                                  uint8_t* const buffer,
+                                  const uint16_t length,
+                                  const Uart_TxHandler* const txHandler,
+                                  uint32_t channelNumber)
+{
+    XDMAD_PrepareChannel(&xdmad, channelNumber);
+
+    //< Get Uart Tx peripheral xdmac id
+    uint32_t periphID = xdmad.XdmaChannels[channelNumber].bDstTxIfID << XDMAC_CC_PERID_Pos;
+    sXdmadCfg config = {
+        .mbr_ubc = length, //< uBlock max length is equal to uart write max data length. Thus one uBlock can be used.
+        .mbr_sa = (uint32_t)buffer,                  //< Data buffer as source addres
+        .mbr_da = (uint32_t)&halUart->uart.reg->thr, //< Uart tx holding register as a destination address
+        .mbr_cfg = XDMAC_CC_TYPE_PER_TRAN | XDMAC_CC_MBSIZE_SINGLE | XDMAC_CC_DSYNC_MEM2PER
+                   | XDMAC_CC_SWREQ_HWR_CONNECTED | XDMAC_CC_MEMSET_NORMAL_MODE | XDMAC_CC_DWIDTH_BYTE
+                   | XDMAC_CC_SIF_AHB_IF1 | XDMAC_CC_DIF_AHB_IF1 | XDMAC_CC_SAM_INCREMENTED_AM | XDMAC_CC_DAM_FIXED_AM
+                   | periphID, //< Config memory to peripheral transfer. Increment source buffer address. Keep
+                               // desitnation address buffer fixed
+        .mbr_bc = 0,           //< do not add any data stride
+        .mbr_ds = 0,
+        .mbr_sus = 0,
+        .mbr_dus = 0,
+    };
+
+    XDMAD_ConfigureTransfer(
+            &xdmad, channelNumber, &config, 0, 0, XDMAC_CIE_BIE | XDMAC_CIE_RBIE | XDMAC_CIE_WBIE | XDMAC_CIE_ROIE);
+    XDMAD_SetCallback(&xdmad, channelNumber, Hal_uart_xdmad_handler, (void*)txHandler);
 }
 
 void
-Hal_uart_write(Hal_Uart* const halUart, uint8_t* const buffer, const uint16_t length, const Uart_TxHandler txHandler)
+Hal_uart_write(Hal_Uart* const halUart,
+               uint8_t* const buffer,
+               const uint16_t length,
+               const Uart_TxHandler* const txHandler)
 {
-    ByteFifo_initFromBytes(&halUart->txFifo, buffer, length);
-    Uart_writeAsync(&halUart->uart, &halUart->txFifo, txHandler);
+    uint32_t channelNumber =
+            XDMAD_AllocateChannel(&xdmad, XDMAD_TRANSFER_MEMORY, Hal_get_nvic_uart_id(halUart->uart.id));
+    if(channelNumber < (xdmad.pXdmacs->XDMAC_GTYPE & XDMAC_GTYPE_NB_CH_Msk)) {
+        Hal_uart_write_init_xdmac_channel(halUart, buffer, length, txHandler, channelNumber);
+        XDMAD_StartTransfer(&xdmad, channelNumber);
+    } else {
+        Hal_console_usart_write((uint8_t*)UART_XDMAD_ERROR_NO_AVALIABLE_CHANNELS,
+                                strlen(UART_XDMAD_ERROR_NO_AVALIABLE_CHANNELS));
+    }
 }
 
 void

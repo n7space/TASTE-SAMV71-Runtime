@@ -13,6 +13,7 @@ target_link_libraries(Samv71RuntimeHal
                 SAMV71::Pmc
                 SAMV71::Utils
                 SAMV71::FreeRTOS
+                SAMV71::Runtime::Xdmad
     PUBLIC      SAMV71::Uart)
 
 add_format_target(Samv71RuntimeHal)
