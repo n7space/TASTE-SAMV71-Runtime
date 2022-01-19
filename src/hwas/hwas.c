@@ -215,14 +215,28 @@ hwas_startup(void)
 void
 hwas_PI_InterruptManagement_DisableInterrupt_Pi(const asn1SccInterruptNumber* IN_interrupt)
 {
-    Nvic_disableInterrupt((Nvic_Irq)*IN_interrupt);
+    Nvic_Irq irqNumber = (Nvic_Irq)*IN_interrupt;
+    switch(irqNumber) {
+        case Nvic_Irq_Usart1:
+        case Nvic_Irq_Xdmac:
+            break;
+        default:
+            Nvic_disableInterrupt(irqNumber);
+    }
 }
 
 void
 hwas_PI_InterruptManagement_EnableInterrupt_Pi(const asn1SccInterruptNumber* IN_interrupt)
 {
-    Nvic_setInterruptPriority((Nvic_Irq)*IN_interrupt, PERIPH_INTERRUPT_PRIORITY);
-    Nvic_enableInterrupt((Nvic_Irq)*IN_interrupt);
+    Nvic_Irq irqNumber = (Nvic_Irq)*IN_interrupt;
+    switch(irqNumber) {
+        case Nvic_Irq_Usart1:
+        case Nvic_Irq_Xdmac:
+            break;
+        default:
+            Nvic_setInterruptPriority(irqNumber, PERIPH_INTERRUPT_PRIORITY);
+            Nvic_enableInterrupt(irqNumber);
+    }
 }
 
 void
@@ -275,4 +289,41 @@ hwas_PI_RawMemoryAccess_WriteWord_Pi(const asn1SccDestinationAddress* IN_address
     regValue |= (mask & valueToSet);
 
     *address = regValue;
+}
+
+void
+hwas_PI_RawMemoryAccess_ExclusiveReadWord_Pi(const asn1SccSourceAddress* IN_address,
+                                             const asn1SccWordMask* IN_mask,
+                                             asn1SccWord* OUT_value)
+{
+    volatile uint32_t memVal;
+    uint32_t maskValue = (uint32_t)*IN_mask;
+    volatile uint32_t* address = (uint32_t*)((uint32_t)*IN_address);
+
+    /// Read
+    __asm volatile("   ldrex  %[memVal],   [%[address]]  \n\r"
+                   : [ memVal ] "=&r"(memVal)
+                   : [ address ] "r"(address)
+                   : "memory");
+
+    uint32_t* addressOut = (uint32_t*)OUT_value;
+    *addressOut = maskValue & memVal;
+}
+
+void
+hwas_PI_RawMemoryAccess_ExclusiveWriteWord_Pi(const asn1SccDestinationAddress* IN_address,
+                                              const asn1SccWordMask* IN_mask,
+                                              const asn1SccWord* IN_value,
+                                              asn1SccByte* OUT_status)
+{
+    volatile uint32_t* address = (uint32_t*)((uint32_t)*IN_address);
+    volatile uint32_t newValue = ((uint32_t)*IN_value) & ((uint32_t)*IN_mask);
+    volatile uint32_t result = 1;
+    /// Write
+    __asm volatile("    strex   %[result],  %[newValue], [%[address]] \n\r"
+                   "    dmb"
+                   : [ result ] "=&r"(result)
+                   : [ newValue ] "r"(newValue), [ address ] "r"(address)
+                   : "memory");
+    *OUT_status = (asn1SccByte)result;
 }
