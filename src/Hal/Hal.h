@@ -50,7 +50,7 @@ void Hal_uart_init(Hal_Uart* const halUart, Hal_Uart_Config halUartConfig);
 /// \param [in] halUart Hal_Uart structure contains uart device descriptor and relevant fifos.
 /// \param [in] buffer array containing bytes to send
 /// \param [in] length length of array of bytes
-/// \param [in] txHandler pointer handler called after successful array transmission
+/// \param [in] txHandler pointer to the handler called after successful array transmission
 void Hal_uart_write(Hal_Uart* const halUart,
                     uint8_t* const buffer,
                     const uint16_t length,
