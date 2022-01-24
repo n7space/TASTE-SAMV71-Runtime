@@ -302,8 +302,8 @@ hwas_PI_RawMemoryAccess_ExclusiveReadWord_Pi(const asn1SccSourceAddress* IN_addr
 
     /// Read
     __asm volatile("   ldrex  %[memVal],   [%[address]]  \n\r"
-                   : [ memVal ] "=&r"(memVal)
-                   : [ address ] "r"(address)
+                   : [memVal] "=&r"(memVal)
+                   : [address] "r"(address)
                    : "memory");
 
     uint32_t* addressOut = (uint32_t*)OUT_value;
@@ -322,8 +322,8 @@ hwas_PI_RawMemoryAccess_ExclusiveWriteWord_Pi(const asn1SccDestinationAddress* I
     /// Write
     __asm volatile("    strex   %[result],  %[newValue], [%[address]] \n\r"
                    "    dmb"
-                   : [ result ] "=&r"(result)
-                   : [ newValue ] "r"(newValue), [ address ] "r"(address)
+                   : [result] "=&r"(result)
+                   : [newValue] "r"(newValue), [address] "r"(address)
                    : "memory");
     *OUT_status = (asn1SccByte)result;
 }
