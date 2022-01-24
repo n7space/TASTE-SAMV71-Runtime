@@ -56,26 +56,24 @@ Hal_uart_xdmad_handler(uint32_t xdmacChannel, void* args)
 static void
 Hal_uart_error_handler(uint32_t errorFlags, void* arg)
 {
+    Hal_Uart* halUart = (Hal_Uart*)arg;
 
-    Hal_Uart * halUart = (Hal_Uart *)arg;
-
-    switch(halUart->uart.id)
-    {
-    case Uart_Id_0:
-        Hal_console_usart_write(UART_ID_UART0, strlen(UART_ID_UART0));
-        break;
-    case Uart_Id_1:
-        Hal_console_usart_write(UART_ID_UART1, strlen(UART_ID_UART1));
-        break;
-    case Uart_Id_2:
-        Hal_console_usart_write(UART_ID_UART2, strlen(UART_ID_UART2));
-        break;
-    case Uart_Id_3:
-        Hal_console_usart_write(UART_ID_UART3, strlen(UART_ID_UART3));
-        break;
-    case Uart_Id_4:
-        Hal_console_usart_write(UART_ID_UART4, strlen(UART_ID_UART4));
-        break;
+    switch(halUart->uart.id) {
+        case Uart_Id_0:
+            Hal_console_usart_write(UART_ID_UART0, strlen(UART_ID_UART0));
+            break;
+        case Uart_Id_1:
+            Hal_console_usart_write(UART_ID_UART1, strlen(UART_ID_UART1));
+            break;
+        case Uart_Id_2:
+            Hal_console_usart_write(UART_ID_UART2, strlen(UART_ID_UART2));
+            break;
+        case Uart_Id_3:
+            Hal_console_usart_write(UART_ID_UART3, strlen(UART_ID_UART3));
+            break;
+        case Uart_Id_4:
+            Hal_console_usart_write(UART_ID_UART4, strlen(UART_ID_UART4));
+            break;
     }
 
     if(errorFlags & UART_SR_OVRE_MASK) {
@@ -343,7 +341,7 @@ Hal_uart_write(Hal_Uart* const halUart,
 void
 Hal_uart_read(Hal_Uart* const halUart, uint8_t* const buffer, const uint16_t length, const Uart_RxHandler rxHandler)
 {
-    Uart_ErrorHandler errorHandler = {.callback = Hal_uart_error_handler, .arg = halUart};
+    Uart_ErrorHandler errorHandler = { .callback = Hal_uart_error_handler, .arg = halUart };
     ByteFifo_init(&halUart->rxFifo, buffer, length);
     Uart_registerErrorHandler(&halUart->uart, errorHandler);
     Uart_readAsync(&halUart->uart, &halUart->rxFifo, rxHandler);
