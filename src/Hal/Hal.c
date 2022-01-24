@@ -229,8 +229,8 @@ Hal_uart_init(Hal_Uart* const halUart, Hal_Uart_Config halUartConfig)
     Hal_uart_init_pio(halUartConfig.id);
     Hal_uart_init_nvic(halUartConfig.id);
 
-    Uart_startup(&halUart->uart);
     Uart_init(halUartConfig.id, &halUart->uart);
+    Uart_startup(&halUart->uart);
 
     Uart_Config config = { .isTxEnabled = true,
                            .isRxEnabled = true,
