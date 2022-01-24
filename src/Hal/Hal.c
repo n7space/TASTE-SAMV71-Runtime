@@ -39,6 +39,8 @@ static sXdmad xdmad;
 #define UART_READ_ERROR_FRAME_ERROR "Hal:Hal_uartRead: Frame error.\n\r"
 #define UART_READ_ERROR_PARITY_ERROR "Hal:Hal_uartRead: Parity error.\n\r"
 
+#define UART_RX_INTERRUPT_ERROR_FIFO_FULL "Hal:Hal_interruptHandler: FIFO is full.\n\r"
+
 void
 XDMAC_Handler(void)
 {
@@ -53,12 +55,10 @@ Hal_uart_xdmad_handler(uint32_t xdmacChannel, void* args)
     uartTxHandler->callback(uartTxHandler->arg);
 }
 
-static void
-Hal_uart_error_handler(uint32_t errorFlags, void* arg)
+static inline void
+Hal_uart_print_uart_id(Uart_Id id)
 {
-    Hal_Uart* halUart = (Hal_Uart*)arg;
-
-    switch(halUart->uart.id) {
+    switch(id) {
         case Uart_Id_0:
             Hal_console_usart_write(UART_ID_UART0, strlen(UART_ID_UART0));
             break;
@@ -75,7 +75,14 @@ Hal_uart_error_handler(uint32_t errorFlags, void* arg)
             Hal_console_usart_write(UART_ID_UART4, strlen(UART_ID_UART4));
             break;
     }
+}
 
+static inline void
+Hal_uart_error_handler(uint32_t errorFlags, void* arg)
+{
+    Hal_Uart* halUart = (Hal_Uart*)arg;
+
+    Hal_uart_print_uart_id(halUart->uart.id);
     if(errorFlags & UART_SR_OVRE_MASK) {
         Hal_console_usart_write(UART_READ_ERROR_OVERRUN_ERROR, strlen(UART_READ_ERROR_OVERRUN_ERROR));
     }
@@ -345,6 +352,24 @@ Hal_uart_read(Hal_Uart* const halUart, uint8_t* const buffer, const uint16_t len
     ByteFifo_init(&halUart->rxFifo, buffer, length);
     Uart_registerErrorHandler(&halUart->uart, errorHandler);
     Uart_readAsync(&halUart->uart, &halUart->rxFifo, rxHandler);
+}
+
+void
+Hal_uart_handle_interrupt(Uart* uart)
+{
+    if(uart != NULL) {
+        int errCode;
+        if(Uart_handleInterrupt(uart, &errCode) == false) {
+            switch(errCode) {
+                case Uart_ErrorCodes_Rx_Fifo_Full:
+                    Hal_console_usart_write(UART_RX_INTERRUPT_ERROR_FIFO_FULL,
+                                            strlen(UART_RX_INTERRUPT_ERROR_FIFO_FULL));
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 }
 
 static inline void
