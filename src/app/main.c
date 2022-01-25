@@ -53,8 +53,6 @@ ByteFifo* uartTxEndCallback(void* arg);
 #define TASK1_MSG "\n\rHello from task1\t Received: "
 #define TASK2_MSG "\n\rHello from task2\t Sent: "
 
-#define UART_ERR_FIFO_FULL "UART FIFO is full"
-
 /* The rate at which data is sent to the queue.  The 200ms value is converted
 to ticks using the portTICK_PERIOD_MS constant. */
 #define TASK1_DELAY (100 / portTICK_PERIOD_MS)
