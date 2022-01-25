@@ -76,16 +76,7 @@ uint8_t buffer[25];
 void
 UART4_Handler(void)
 {
-    int errCode;
-    if(Uart_handleInterrupt(&halUart.uart, &errCode) == false) {
-        switch(errCode) {
-            case Uart_ErrorCodes_Rx_Fifo_Full:
-                Hal_console_usart_write(UART_ERR_FIFO_FULL, strlen(UART_ERR_FIFO_FULL));
-                break;
-            default:
-                break;
-        }
-    }
+    Uart_handleInterrupt(&halUart.uart, &errCode);
 }
 
 int
