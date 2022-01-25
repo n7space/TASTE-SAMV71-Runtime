@@ -94,7 +94,7 @@ Hal_uart_error_handler(Uart_ErrorFlags errorFlags, void* arg)
     }
     if(errorFlags.hasRxFifoFullErrorOccurred == true) {
         Hal_console_usart_write(UART_RX_INTERRUPT_ERROR_FIFO_FULL, strlen(UART_RX_INTERRUPT_ERROR_FIFO_FULL));
-        assert(false);
+        assert(false && "Rx FIFO is full.");
     }
 }
 
