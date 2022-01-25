@@ -78,19 +78,22 @@ Hal_uart_print_uart_id(Uart_Id id)
 }
 
 static inline void
-Hal_uart_error_handler(uint32_t errorFlags, void* arg)
+Hal_uart_error_handler(Uart_ErrorFlags errorFlags, void* arg)
 {
     Hal_Uart* halUart = (Hal_Uart*)arg;
 
     Hal_uart_print_uart_id(halUart->uart.id);
-    if(errorFlags & UART_SR_OVRE_MASK) {
+    if(errorFlags.hasOverrunOccurred == true) {
         Hal_console_usart_write(UART_READ_ERROR_OVERRUN_ERROR, strlen(UART_READ_ERROR_OVERRUN_ERROR));
     }
-    if(errorFlags & UART_SR_FRAME_MASK) {
+    if(errorFlags.hasFramingErrorOccurred == true) {
         Hal_console_usart_write(UART_READ_ERROR_FRAME_ERROR, strlen(UART_READ_ERROR_FRAME_ERROR));
     }
-    if(errorFlags & UART_SR_PARE_MASK) {
+    if(errorFlags.hasParityErrorOccurred == true) {
         Hal_console_usart_write(UART_READ_ERROR_PARITY_ERROR, strlen(UART_READ_ERROR_PARITY_ERROR));
+    }
+    if(errorFlags.hasRxFifoFullErrorOccurred == true) {
+        Hal_console_usart_write(UART_RX_INTERRUPT_ERROR_FIFO_FULL, strlen(UART_RX_INTERRUPT_ERROR_FIFO_FULL));
     }
 }
 
@@ -358,17 +361,7 @@ void
 Hal_uart_handle_interrupt(Uart* uart)
 {
     if(uart != NULL) {
-        int errCode;
-        if(Uart_handleInterrupt(uart, &errCode) == false) {
-            switch(errCode) {
-                case Uart_ErrorCodes_Rx_Fifo_Full:
-                    Hal_console_usart_write(UART_RX_INTERRUPT_ERROR_FIFO_FULL,
-                                            strlen(UART_RX_INTERRUPT_ERROR_FIFO_FULL));
-                    break;
-                default:
-                    break;
-            }
-        }
+        Uart_handleInterrupt(uart, NULL);
     }
 }
 
