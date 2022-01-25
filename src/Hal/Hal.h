@@ -66,10 +66,6 @@ void Hal_uart_read(Hal_Uart* const halUart,
                    const uint16_t length,
                    const Uart_RxHandler rxHandler);
 
-/// \brief Handles uart interrupt
-/// \param [in] uart structure conrains uart device descriptor
-void Hal_uart_handle_interrupt(Uart* uart);
-
 /// \brief Initializes USART 1, which is connected to virtual com port gateway
 /**
  * Initializes pmc for pio port B and for usart 1

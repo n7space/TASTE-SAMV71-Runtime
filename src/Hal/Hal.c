@@ -357,14 +357,6 @@ Hal_uart_read(Hal_Uart* const halUart, uint8_t* const buffer, const uint16_t len
     Uart_readAsync(&halUart->uart, &halUart->rxFifo, rxHandler);
 }
 
-void
-Hal_uart_handle_interrupt(Uart* uart)
-{
-    if(uart != NULL) {
-        Uart_handleInterrupt(uart, NULL);
-    }
-}
-
 static inline void
 Hal_console_usart_init_pio(void)
 {
