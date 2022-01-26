@@ -73,8 +73,7 @@ uint8_t buffer[25];
 void
 UART4_Handler(void)
 {
-    int error;
-    Uart_handleInterrupt(&halUart.uart, &error);
+    Uart_handleInterrupt(&halUart.uart);
 }
 
 int
