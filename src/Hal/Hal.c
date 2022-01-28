@@ -26,7 +26,20 @@ static sXdmad xdmad;
 #define UART_XDMAC_INTERRUPT_PRIORITY UART_INTERRUPT_PRIORITY
 
 #define XDMAD_NO_POLLING 0
-#define UART_XDMAD_ERROR_NO_AVALIABLE_CHANNELS "Hal.c Hal_uartWrite: The xdmac channels are not avaliable."
+
+#define UART_ID_UART0 "UART0: "
+#define UART_ID_UART1 "UART1: "
+#define UART_ID_UART2 "UART2: "
+#define UART_ID_UART3 "UART3: "
+#define UART_ID_UART4 "UART4: "
+
+#define UART_XDMAD_ERROR_NO_AVALIABLE_CHANNELS "Hal:Hal_uartWrite: The xdmac channels are not avaliable.\n\r"
+
+#define UART_READ_ERROR_OVERRUN_ERROR "Hal:Hal_uartRead: Overrun error.\n\r"
+#define UART_READ_ERROR_FRAME_ERROR "Hal:Hal_uartRead: Frame error.\n\r"
+#define UART_READ_ERROR_PARITY_ERROR "Hal:Hal_uartRead: Parity error.\n\r"
+
+#define UART_RX_INTERRUPT_ERROR_FIFO_FULL "Hal:Hal_interruptHandler: FIFO is full.\n\r"
 
 void
 XDMAC_Handler(void)
@@ -42,6 +55,49 @@ Hal_uart_xdmad_handler(uint32_t xdmacChannel, void* args)
     uartTxHandler->callback(uartTxHandler->arg);
 }
 
+static inline void
+Hal_uart_print_uart_id(Uart_Id id)
+{
+    switch(id) {
+        case Uart_Id_0:
+            Hal_console_usart_write(UART_ID_UART0, strlen(UART_ID_UART0));
+            break;
+        case Uart_Id_1:
+            Hal_console_usart_write(UART_ID_UART1, strlen(UART_ID_UART1));
+            break;
+        case Uart_Id_2:
+            Hal_console_usart_write(UART_ID_UART2, strlen(UART_ID_UART2));
+            break;
+        case Uart_Id_3:
+            Hal_console_usart_write(UART_ID_UART3, strlen(UART_ID_UART3));
+            break;
+        case Uart_Id_4:
+            Hal_console_usart_write(UART_ID_UART4, strlen(UART_ID_UART4));
+            break;
+    }
+}
+
+static inline void
+Hal_uart_error_handler(Uart_ErrorFlags errorFlags, void* arg)
+{
+    Hal_Uart* halUart = (Hal_Uart*)arg;
+
+    Hal_uart_print_uart_id(halUart->uart.id);
+    if(errorFlags.hasOverrunOccurred == true) {
+        Hal_console_usart_write(UART_READ_ERROR_OVERRUN_ERROR, strlen(UART_READ_ERROR_OVERRUN_ERROR));
+    }
+    if(errorFlags.hasFramingErrorOccurred == true) {
+        Hal_console_usart_write(UART_READ_ERROR_FRAME_ERROR, strlen(UART_READ_ERROR_FRAME_ERROR));
+    }
+    if(errorFlags.hasParityErrorOccurred == true) {
+        Hal_console_usart_write(UART_READ_ERROR_PARITY_ERROR, strlen(UART_READ_ERROR_PARITY_ERROR));
+    }
+    if(errorFlags.hasRxFifoFullErrorOccurred == true) {
+        Hal_console_usart_write(UART_RX_INTERRUPT_ERROR_FIFO_FULL, strlen(UART_RX_INTERRUPT_ERROR_FIFO_FULL));
+        assert(false && "Rx FIFO is full.");
+    }
+}
+
 inline static void
 Hal_uart_init_uart0_pio(Pio_Port* const port, Pio_Port_Config* const pioConfigTx, Pio_Port_Config* const pioConfigRx)
 {
@@ -53,6 +109,7 @@ Hal_uart_init_uart0_pio(Pio_Port* const port, Pio_Port_Config* const pioConfigTx
     pioConfigTx->pins = PIO_PIN_10;
     pioConfigTx->pinsConfig.control = Pio_Control_PeripheralA;
 }
+
 inline static void
 Hal_uart_init_uart1_pio(Pio_Port* const port, Pio_Port_Config* const pioConfigTx, Pio_Port_Config* const pioConfigRx)
 {
@@ -282,7 +339,7 @@ Hal_uart_write(Hal_Uart* const halUart,
                const Uart_TxHandler* const txHandler)
 {
     uint32_t channelNumber =
-            XDMAD_AllocateChannel(&xdmad, XDMAD_TRANSFER_MEMORY, Hal_get_nvic_uart_id(halUart->uart.id));
+            XDMAD_AllocateChannel(&xdmad, XDMAD_TRANSFER_MEMORY, Hal_get_periph_uart_id(halUart->uart.id));
     if(channelNumber < (xdmad.pXdmacs->XDMAC_GTYPE & XDMAC_GTYPE_NB_CH_Msk)) {
         Hal_uart_write_init_xdmac_channel(halUart, buffer, length, txHandler, channelNumber);
         XDMAD_StartTransfer(&xdmad, channelNumber);
@@ -295,7 +352,9 @@ Hal_uart_write(Hal_Uart* const halUart,
 void
 Hal_uart_read(Hal_Uart* const halUart, uint8_t* const buffer, const uint16_t length, const Uart_RxHandler rxHandler)
 {
+    Uart_ErrorHandler errorHandler = { .callback = Hal_uart_error_handler, .arg = halUart };
     ByteFifo_init(&halUart->rxFifo, buffer, length);
+    Uart_registerErrorHandler(&halUart->uart, errorHandler);
     Uart_readAsync(&halUart->uart, &halUart->rxFifo, rxHandler);
 }
 
