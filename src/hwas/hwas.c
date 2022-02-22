@@ -179,6 +179,41 @@ MCAN1_Handler(void)
 }
 
 void
+UART0_Handler(void)
+{
+    asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Uart0 };
+    HwasHandleInterrupt(&irq);
+}
+
+void
+UART1_Handler(void)
+{
+    asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Uart1 };
+    HwasHandleInterrupt(&irq);
+}
+
+void
+UART2_Handler(void)
+{
+    asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Uart2 };
+    HwasHandleInterrupt(&irq);
+}
+
+void
+UART3_Handler(void)
+{
+    asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Uart3 };
+    HwasHandleInterrupt(&irq);
+}
+
+void
+UART4_Handler(void)
+{
+    asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Uart4 };
+    HwasHandleInterrupt(&irq);
+}
+
+void
 HwasInterruptHandlerTask(void* args)
 {
     (void)args;
@@ -302,8 +337,8 @@ hwas_PI_RawMemoryAccess_ExclusiveReadWord_Pi(const asn1SccSourceAddress* IN_addr
 
     /// Read
     __asm volatile("   ldrex  %[memVal],   [%[address]]  \n\r"
-                   : [memVal] "=&r"(memVal)
-                   : [address] "r"(address)
+                   : [ memVal ] "=&r"(memVal)
+                   : [ address ] "r"(address)
                    : "memory");
 
     uint32_t* addressOut = (uint32_t*)OUT_value;
@@ -322,8 +357,8 @@ hwas_PI_RawMemoryAccess_ExclusiveWriteWord_Pi(const asn1SccDestinationAddress* I
     /// Write
     __asm volatile("    strex   %[result],  %[newValue], [%[address]] \n\r"
                    "    dmb"
-                   : [result] "=&r"(result)
-                   : [newValue] "r"(newValue), [address] "r"(address)
+                   : [ result ] "=&r"(result)
+                   : [ newValue ] "r"(newValue), [ address ] "r"(address)
                    : "memory");
     *OUT_status = (asn1SccByte)result;
 }
