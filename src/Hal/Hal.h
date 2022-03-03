@@ -25,6 +25,8 @@
 
 #include "Uart/Uart.h"
 
+#include "Nvic/Nvic.h"
+
 /// \brief Uart configuration structure
 typedef struct
 {

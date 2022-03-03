@@ -59,7 +59,7 @@ void
 UART0_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Uart0] != NULL)
-        interruptSubscribe[Nvic_Irq_Uart0]();
+        interruptSubscribe[Nvic_Irq_Uart0](NULL);
     else if(uart0handle != NULL)
         Uart_handleInterrupt(uart0handle);
 }
@@ -68,7 +68,7 @@ void
 UART1_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Uart1] != NULL)
-        interruptSubscribe[Nvic_Irq_Uart1]();
+        interruptSubscribe[Nvic_Irq_Uart1](NULL);
     else if(uart1handle != NULL)
         Uart_handleInterrupt(uart1handle);
 }
@@ -77,7 +77,7 @@ void
 UART2_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Uart2] != NULL)
-        interruptSubscribe[Nvic_Irq_Uart2]();
+        interruptSubscribe[Nvic_Irq_Uart2](NULL);
     else if(uart2handle != NULL)
         Uart_handleInterrupt(uart2handle);
 }
@@ -86,7 +86,7 @@ void
 UART3_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Uart3] != NULL)
-        interruptSubscribe[Nvic_Irq_Uart3]();
+        interruptSubscribe[Nvic_Irq_Uart3](NULL);
     else if(uart3handle != NULL)
         Uart_handleInterrupt(uart3handle);
 }
@@ -95,7 +95,7 @@ void
 UART4_Handler(void)
 {
     if(interruptSubscribe[Nvic_Irq_Uart4] != NULL)
-        interruptSubscribe[Nvic_Irq_Uart4]();
+        interruptSubscribe[Nvic_Irq_Uart4](NULL);
     else if(uart4handle != NULL)
         Uart_handleInterrupt(uart4handle);
 }

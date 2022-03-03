@@ -10,6 +10,7 @@
  */
 
 #include "hwas.h"
+#include "Hal/Hal.h"
 
 #include <Nvic/Nvic.h>
 
@@ -179,36 +180,41 @@ MCAN1_Handler(void)
 }
 
 void
-UART0_Handler(void)
+HwasUART0_Handler(void* args)
 {
+    (void)args;
     asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Uart0 };
     HwasHandleInterrupt(&irq);
 }
 
 void
-UART1_Handler(void)
+HwasUART1_Handler(void* args)
 {
+    (void)args;
     asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Uart1 };
     HwasHandleInterrupt(&irq);
 }
 
 void
-UART2_Handler(void)
+HwasUART2_Handler(void* args)
 {
+    (void)args;
     asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Uart2 };
     HwasHandleInterrupt(&irq);
 }
 
 void
-UART3_Handler(void)
+HwasUART3_Handler(void* args)
 {
+    (void)args;
     asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Uart3 };
     HwasHandleInterrupt(&irq);
 }
 
 void
-UART4_Handler(void)
+HwasUART4_Handler(void* args)
 {
+    (void)args;
     asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Uart4 };
     HwasHandleInterrupt(&irq);
 }
@@ -278,6 +284,23 @@ void
 hwas_PI_InterruptSubscriptionManagement_SubscribeToInterrupt_Pi(const asn1SccInterruptNumber* IN_interrupt)
 {
     interruptSubscribe[*IN_interrupt] = true;
+    switch((Nvic_Irq)IN_interrupt) {
+        case Nvic_Irq_Uart0:
+            Hal_subscribe_to_interrupt((Nvic_Irq)IN_interrupt, HwasUART0_Handler);
+            break;
+        case Nvic_Irq_Uart1:
+            Hal_subscribe_to_interrupt((Nvic_Irq)IN_interrupt, HwasUART1_Handler);
+            break;
+        case Nvic_Irq_Uart2:
+            Hal_subscribe_to_interrupt((Nvic_Irq)IN_interrupt, HwasUART2_Handler);
+            break;
+        case Nvic_Irq_Uart3:
+            Hal_subscribe_to_interrupt((Nvic_Irq)IN_interrupt, HwasUART3_Handler);
+            break;
+        case Nvic_Irq_Uart4:
+            Hal_subscribe_to_interrupt((Nvic_Irq)IN_interrupt, HwasUART4_Handler);
+            break;
+    }
 }
 
 void
