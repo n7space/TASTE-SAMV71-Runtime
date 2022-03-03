@@ -6,7 +6,6 @@
 #include "string.h"
 
 #include "Pio/Pio.h"
-#include "Nvic/Nvic.h"
 #include "SystemConfig/SystemConfig.h"
 
 #include "FreeRTOSConfig.h"
