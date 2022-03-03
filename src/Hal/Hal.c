@@ -15,6 +15,8 @@
 
 static sXdmad xdmad;
 
+static volatile InterruptCallback* interruptSubscribe[Nvic_InterruptCount] = { NULL };
+
 static Uart* uart0handle;
 static Uart* uart1handle;
 static Uart* uart2handle;
@@ -56,35 +58,45 @@ XDMAC_Handler(void)
 void
 UART0_Handler(void)
 {
-    if(uart0handle != NULL)
+    if(interruptSubscribe[Nvic_Irq_Uart0] != NULL)
+        interruptSubscribe[Nvic_Irq_Uart0]();
+    else if(uart0handle != NULL)
         Uart_handleInterrupt(uart0handle);
 }
 
 void
 UART1_Handler(void)
 {
-    if(uart1handle != NULL)
+    if(interruptSubscribe[Nvic_Irq_Uart1] != NULL)
+        interruptSubscribe[Nvic_Irq_Uart1]();
+    else if(uart1handle != NULL)
         Uart_handleInterrupt(uart1handle);
 }
 
 void
 UART2_Handler(void)
 {
-    if(uart2handle != NULL)
+    if(interruptSubscribe[Nvic_Irq_Uart2] != NULL)
+        interruptSubscribe[Nvic_Irq_Uart2]();
+    else if(uart2handle != NULL)
         Uart_handleInterrupt(uart2handle);
 }
 
 void
 UART3_Handler(void)
 {
-    if(uart3handle != NULL)
+    if(interruptSubscribe[Nvic_Irq_Uart3] != NULL)
+        interruptSubscribe[Nvic_Irq_Uart3]();
+    else if(uart3handle != NULL)
         Uart_handleInterrupt(uart3handle);
 }
 
 void
 UART4_Handler(void)
 {
-    if(uart4handle != NULL)
+    if(interruptSubscribe[Nvic_Irq_Uart4] != NULL)
+        interruptSubscribe[Nvic_Irq_Uart4]();
+    else if(uart4handle != NULL)
         Uart_handleInterrupt(uart4handle);
 }
 
@@ -336,6 +348,12 @@ Hal_uart_init_dma(void)
     Nvic_enableInterrupt(Nvic_Irq_Xdmac);
 
     XDMAD_Initialize(&xdmad, XDMAD_NO_POLLING);
+}
+
+void
+Hal_subscribe_to_interrupt(Nvic_Irq irq, InterruptCallback callback)
+{
+    interruptSubscribe[irq] = callback;
 }
 
 void
