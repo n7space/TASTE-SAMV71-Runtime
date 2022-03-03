@@ -284,21 +284,21 @@ void
 hwas_PI_InterruptSubscriptionManagement_SubscribeToInterrupt_Pi(const asn1SccInterruptNumber* IN_interrupt)
 {
     interruptSubscribe[*IN_interrupt] = true;
-    switch((Nvic_Irq)IN_interrupt) {
+    switch((Nvic_Irq)*IN_interrupt) {
         case Nvic_Irq_Uart0:
-            Hal_subscribe_to_interrupt((Nvic_Irq)IN_interrupt, HwasUART0_Handler);
+            Hal_subscribe_to_interrupt(Nvic_Irq_Uart0, HwasUART0_Handler);
             break;
         case Nvic_Irq_Uart1:
-            Hal_subscribe_to_interrupt((Nvic_Irq)IN_interrupt, HwasUART1_Handler);
+            Hal_subscribe_to_interrupt(Nvic_Irq_Uart1, HwasUART1_Handler);
             break;
         case Nvic_Irq_Uart2:
-            Hal_subscribe_to_interrupt((Nvic_Irq)IN_interrupt, HwasUART2_Handler);
+            Hal_subscribe_to_interrupt(Nvic_Irq_Uart2, HwasUART2_Handler);
             break;
         case Nvic_Irq_Uart3:
-            Hal_subscribe_to_interrupt((Nvic_Irq)IN_interrupt, HwasUART3_Handler);
+            Hal_subscribe_to_interrupt(Nvic_Irq_Uart3, HwasUART3_Handler);
             break;
         case Nvic_Irq_Uart4:
-            Hal_subscribe_to_interrupt((Nvic_Irq)IN_interrupt, HwasUART4_Handler);
+            Hal_subscribe_to_interrupt(Nvic_Irq_Uart4, HwasUART4_Handler);
             break;
     }
 }
