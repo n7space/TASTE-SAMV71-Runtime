@@ -70,12 +70,6 @@ static SemaphoreHandle_t binarySemaphore;
 static QueueHandle_t xQueue = NULL;
 uint8_t buffer[25];
 
-void
-UART4_Handler(void)
-{
-    Uart_handleInterrupt(&halUart.uart);
-}
-
 int
 main()
 {
