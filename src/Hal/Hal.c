@@ -14,7 +14,7 @@
 
 static sXdmad xdmad;
 
-static volatile InterruptCallback* interruptSubscribe[Nvic_InterruptCount] = { NULL };
+static volatile InterruptCallback* interruptSubsciption[Nvic_InterruptCount] = { NULL };
 
 static Uart* uart0handle;
 static Uart* uart1handle;
@@ -57,8 +57,8 @@ XDMAC_Handler(void)
 void
 UART0_Handler(void)
 {
-    if(interruptSubscribe[Nvic_Irq_Uart0] != NULL)
-        interruptSubscribe[Nvic_Irq_Uart0](NULL);
+    if(interruptSubsciption[Nvic_Irq_Uart0] != NULL)
+        interruptSubsciption[Nvic_Irq_Uart0](NULL);
     else if(uart0handle != NULL)
         Uart_handleInterrupt(uart0handle);
 }
@@ -66,8 +66,8 @@ UART0_Handler(void)
 void
 UART1_Handler(void)
 {
-    if(interruptSubscribe[Nvic_Irq_Uart1] != NULL)
-        interruptSubscribe[Nvic_Irq_Uart1](NULL);
+    if(interruptSubsciption[Nvic_Irq_Uart1] != NULL)
+        interruptSubsciption[Nvic_Irq_Uart1](NULL);
     else if(uart1handle != NULL)
         Uart_handleInterrupt(uart1handle);
 }
@@ -75,8 +75,8 @@ UART1_Handler(void)
 void
 UART2_Handler(void)
 {
-    if(interruptSubscribe[Nvic_Irq_Uart2] != NULL)
-        interruptSubscribe[Nvic_Irq_Uart2](NULL);
+    if(interruptSubsciption[Nvic_Irq_Uart2] != NULL)
+        interruptSubsciption[Nvic_Irq_Uart2](NULL);
     else if(uart2handle != NULL)
         Uart_handleInterrupt(uart2handle);
 }
@@ -84,8 +84,8 @@ UART2_Handler(void)
 void
 UART3_Handler(void)
 {
-    if(interruptSubscribe[Nvic_Irq_Uart3] != NULL)
-        interruptSubscribe[Nvic_Irq_Uart3](NULL);
+    if(interruptSubsciption[Nvic_Irq_Uart3] != NULL)
+        interruptSubsciption[Nvic_Irq_Uart3](NULL);
     else if(uart3handle != NULL)
         Uart_handleInterrupt(uart3handle);
 }
@@ -93,8 +93,8 @@ UART3_Handler(void)
 void
 UART4_Handler(void)
 {
-    if(interruptSubscribe[Nvic_Irq_Uart4] != NULL)
-        interruptSubscribe[Nvic_Irq_Uart4](NULL);
+    if(interruptSubsciption[Nvic_Irq_Uart4] != NULL)
+        interruptSubsciption[Nvic_Irq_Uart4](NULL);
     else if(uart4handle != NULL)
         Uart_handleInterrupt(uart4handle);
 }
@@ -352,7 +352,7 @@ Hal_uart_init_dma(void)
 void
 Hal_subscribe_to_interrupt(Nvic_Irq irq, InterruptCallback callback)
 {
-    interruptSubscribe[irq] = callback;
+    interruptSubsciption[irq] = callback;
 }
 
 void
