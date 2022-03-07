@@ -10,6 +10,7 @@
  */
 
 #include "hwas.h"
+#include "Hal/Hal.h"
 
 #include <Nvic/Nvic.h>
 
@@ -179,6 +180,46 @@ MCAN1_Handler(void)
 }
 
 void
+HwasUART0_Handler(void* args)
+{
+    (void)args;
+    asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Uart0 };
+    HwasHandleInterrupt(&irq);
+}
+
+void
+HwasUART1_Handler(void* args)
+{
+    (void)args;
+    asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Uart1 };
+    HwasHandleInterrupt(&irq);
+}
+
+void
+HwasUART2_Handler(void* args)
+{
+    (void)args;
+    asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Uart2 };
+    HwasHandleInterrupt(&irq);
+}
+
+void
+HwasUART3_Handler(void* args)
+{
+    (void)args;
+    asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Uart3 };
+    HwasHandleInterrupt(&irq);
+}
+
+void
+HwasUART4_Handler(void* args)
+{
+    (void)args;
+    asn1SccInterrupt_Type irq = { .interrupt = Nvic_Irq_Uart4 };
+    HwasHandleInterrupt(&irq);
+}
+
+void
 HwasInterruptHandlerTask(void* args)
 {
     (void)args;
@@ -243,6 +284,23 @@ void
 hwas_PI_InterruptSubscriptionManagement_SubscribeToInterrupt_Pi(const asn1SccInterruptNumber* IN_interrupt)
 {
     interruptSubscribe[*IN_interrupt] = true;
+    switch((Nvic_Irq)*IN_interrupt) {
+        case Nvic_Irq_Uart0:
+            Hal_subscribe_to_interrupt(Nvic_Irq_Uart0, HwasUART0_Handler);
+            break;
+        case Nvic_Irq_Uart1:
+            Hal_subscribe_to_interrupt(Nvic_Irq_Uart1, HwasUART1_Handler);
+            break;
+        case Nvic_Irq_Uart2:
+            Hal_subscribe_to_interrupt(Nvic_Irq_Uart2, HwasUART2_Handler);
+            break;
+        case Nvic_Irq_Uart3:
+            Hal_subscribe_to_interrupt(Nvic_Irq_Uart3, HwasUART3_Handler);
+            break;
+        case Nvic_Irq_Uart4:
+            Hal_subscribe_to_interrupt(Nvic_Irq_Uart4, HwasUART4_Handler);
+            break;
+    }
 }
 
 void
@@ -302,8 +360,8 @@ hwas_PI_RawMemoryAccess_ExclusiveReadWord_Pi(const asn1SccSourceAddress* IN_addr
 
     /// Read
     __asm volatile("   ldrex  %[memVal],   [%[address]]  \n\r"
-                   : [memVal] "=&r"(memVal)
-                   : [address] "r"(address)
+                   : [ memVal ] "=&r"(memVal)
+                   : [ address ] "r"(address)
                    : "memory");
 
     uint32_t* addressOut = (uint32_t*)OUT_value;
@@ -322,8 +380,8 @@ hwas_PI_RawMemoryAccess_ExclusiveWriteWord_Pi(const asn1SccDestinationAddress* I
     /// Write
     __asm volatile("    strex   %[result],  %[newValue], [%[address]] \n\r"
                    "    dmb"
-                   : [result] "=&r"(result)
-                   : [newValue] "r"(newValue), [address] "r"(address)
+                   : [ result ] "=&r"(result)
+                   : [ newValue ] "r"(newValue), [ address ] "r"(address)
                    : "memory");
     *OUT_status = (asn1SccByte)result;
 }

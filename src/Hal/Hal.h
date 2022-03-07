@@ -25,6 +25,8 @@
 
 #include "Uart/Uart.h"
 
+#include "Nvic/Nvic.h"
+
 /// \brief Uart configuration structure
 typedef struct
 {
@@ -40,6 +42,16 @@ typedef struct
     ByteFifo rxFifo;
     ByteFifo txFifo;
 } Hal_Uart;
+
+/// \brief A function serving as a callback called upon an interrupt if the interrupt
+///          was subscribed to.
+typedef void(InterruptCallback)(void*);
+
+/// \brief Subscribes to interrupt and sets function that is called upon the interrupt
+///         reception
+/// \param [in] irq Numeric identifier of the interrupt to subscribe to
+/// \param [in] callback Callback function pointer
+void Hal_subscribe_to_interrupt(Nvic_Irq irq, InterruptCallback callback);
 
 /// \brief Starts up, initializes and configures Uart and coresponding periferals
 /// \param [in] halUart Hal_Uart structure contains uart device descriptor and relevant fifos.

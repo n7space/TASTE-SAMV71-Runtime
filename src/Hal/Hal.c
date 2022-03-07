@@ -6,7 +6,6 @@
 #include "string.h"
 
 #include "Pio/Pio.h"
-#include "Nvic/Nvic.h"
 #include "SystemConfig/SystemConfig.h"
 
 #include "FreeRTOSConfig.h"
@@ -14,6 +13,14 @@
 #define USART_BAUD_RATE 115200
 
 static sXdmad xdmad;
+
+static volatile InterruptCallback* interruptSubscription[Nvic_InterruptCount] = { NULL };
+
+static Uart* uart0handle;
+static Uart* uart1handle;
+static Uart* uart2handle;
+static Uart* uart3handle;
+static Uart* uart4handle;
 
 /**
  * @brief UART priotity definition
@@ -45,6 +52,51 @@ void
 XDMAC_Handler(void)
 {
     XDMAD_Handler(&xdmad);
+}
+
+void
+UART0_Handler(void)
+{
+    if(interruptSubscription[Nvic_Irq_Uart0] != NULL)
+        interruptSubscription[Nvic_Irq_Uart0](NULL);
+    else if(uart0handle != NULL)
+        Uart_handleInterrupt(uart0handle);
+}
+
+void
+UART1_Handler(void)
+{
+    if(interruptSubscription[Nvic_Irq_Uart1] != NULL)
+        interruptSubscription[Nvic_Irq_Uart1](NULL);
+    else if(uart1handle != NULL)
+        Uart_handleInterrupt(uart1handle);
+}
+
+void
+UART2_Handler(void)
+{
+    if(interruptSubscription[Nvic_Irq_Uart2] != NULL)
+        interruptSubscription[Nvic_Irq_Uart2](NULL);
+    else if(uart2handle != NULL)
+        Uart_handleInterrupt(uart2handle);
+}
+
+void
+UART3_Handler(void)
+{
+    if(interruptSubscription[Nvic_Irq_Uart3] != NULL)
+        interruptSubscription[Nvic_Irq_Uart3](NULL);
+    else if(uart3handle != NULL)
+        Uart_handleInterrupt(uart3handle);
+}
+
+void
+UART4_Handler(void)
+{
+    if(interruptSubscription[Nvic_Irq_Uart4] != NULL)
+        interruptSubscription[Nvic_Irq_Uart4](NULL);
+    else if(uart4handle != NULL)
+        Uart_handleInterrupt(uart4handle);
 }
 
 void
@@ -263,6 +315,28 @@ Hal_uart_init_nvic(Uart_Id id)
     Nvic_setInterruptPriority(Hal_get_nvic_uart_id(id), UART_INTERRUPT_PRIORITY);
 }
 
+inline static void
+Hal_uart_init_handle(Uart* uart, Uart_Id id)
+{
+    switch(id) {
+        case Uart_Id_0:
+            uart0handle = uart;
+            break;
+        case Uart_Id_1:
+            uart1handle = uart;
+            break;
+        case Uart_Id_2:
+            uart2handle = uart;
+            break;
+        case Uart_Id_3:
+            uart3handle = uart;
+            break;
+        case Uart_Id_4:
+            uart4handle = uart;
+            break;
+    }
+}
+
 static inline void
 Hal_uart_init_dma(void)
 {
@@ -276,6 +350,12 @@ Hal_uart_init_dma(void)
 }
 
 void
+Hal_subscribe_to_interrupt(Nvic_Irq irq, InterruptCallback callback)
+{
+    interruptSubscription[irq] = callback;
+}
+
+void
 Hal_uart_init(Hal_Uart* const halUart, Hal_Uart_Config halUartConfig)
 {
     assert(halUartConfig.id <= Uart_Id_4);
@@ -285,6 +365,7 @@ Hal_uart_init(Hal_Uart* const halUart, Hal_Uart_Config halUartConfig)
     Hal_uart_init_pmc(halUartConfig.id);
     Hal_uart_init_pio(halUartConfig.id);
     Hal_uart_init_nvic(halUartConfig.id);
+    Hal_uart_init_handle(&halUart->uart, halUartConfig.id);
 
     Uart_init(halUartConfig.id, &halUart->uart);
     Uart_startup(&halUart->uart);
