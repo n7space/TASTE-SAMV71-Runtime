@@ -180,6 +180,24 @@ MCAN1_Handler(void)
 }
 
 void
+AFEC0_Handler(void)
+{
+    if(interruptSubscribe[Nvic_Irq_Afec0]) {
+        asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type irq = { .interrupt = Nvic_Irq_Afec0 };
+        HwasHandleInterrupt(&irq);
+    }
+}
+
+void
+AFEC1_Handler(void)
+{
+    if(interruptSubscribe[Nvic_Irq_Afec1]) {
+        asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type irq = { .interrupt = Nvic_Irq_Afec1 };
+        HwasHandleInterrupt(&irq);
+    }
+}
+
+void
 HwasUART0_Handler(void* args)
 {
     (void)args;
