@@ -44,7 +44,8 @@ extern "C"
                                                        asn1SccByte*);
 
     /* Required interfaces */
-    extern void hwas_RI_InterruptSubscription_Interrupt_Ri(const asn1SccInterrupt_Type*);
+    extern void hwas_RI_InterruptSubscription_Interrupt_Ri(
+            const asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type*);
 
 #ifdef __cplusplus
 }

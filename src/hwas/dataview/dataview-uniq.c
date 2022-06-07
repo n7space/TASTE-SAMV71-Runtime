@@ -481,40 +481,40 @@ flag asn1SccInterruptNumber_ACN_Decode(asn1SccInterruptNumber* pVal, BitStream* 
 
 
 
-flag asn1SccInterrupt_Type_interrupt_Equal(const asn1SccInterrupt_Type_interrupt* pVal1, const asn1SccInterrupt_Type_interrupt* pVal2)
+flag asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_interrupt_Equal(const asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_interrupt* pVal1, const asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_interrupt* pVal2)
 {
 	return (*(pVal1)) == (*(pVal2));
 
 }
 
-flag asn1SccInterrupt_Type_Equal(const asn1SccInterrupt_Type* pVal1, const asn1SccInterrupt_Type* pVal2)
+flag asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_Equal(const asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type* pVal1, const asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type* pVal2)
 {
 	flag ret=TRUE;
 
-    ret = asn1SccInterrupt_Type_interrupt_Equal((&(pVal1->interrupt)), (&(pVal2->interrupt)));
+    ret = asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_interrupt_Equal((&(pVal1->interrupt)), (&(pVal2->interrupt)));
 
 	return ret;
 
 }
 
-void asn1SccInterrupt_Type_interrupt_Initialize(asn1SccInterrupt_Type_interrupt* pVal)
+void asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_interrupt_Initialize(asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_interrupt* pVal)
 {
 	(void)pVal;
 
 
 	(*(pVal)) = 0;
 }
-void asn1SccInterrupt_Type_Initialize(asn1SccInterrupt_Type* pVal)
+void asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_Initialize(asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type* pVal)
 {
 	(void)pVal;
 
 
 
 	/*set interrupt */
-	asn1SccInterrupt_Type_interrupt_Initialize((&(pVal->interrupt)));
+	asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_interrupt_Initialize((&(pVal->interrupt)));
 }
 
-flag asn1SccInterrupt_Type_IsConstraintValid(const asn1SccInterrupt_Type* pVal, int* pErrCode)
+flag asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_IsConstraintValid(const asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type* pVal, int* pErrCode)
 {
     flag ret = TRUE;
     ret = (pVal->interrupt <= 255UL);
@@ -526,13 +526,13 @@ flag asn1SccInterrupt_Type_IsConstraintValid(const asn1SccInterrupt_Type* pVal, 
 	return ret;
 }
 
-flag asn1SccInterrupt_Type_Encode(const asn1SccInterrupt_Type* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints)
+flag asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_Encode(const asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints)
 {
     flag ret = TRUE;
 
 
 	*pErrCode = 0;
-	ret = bCheckConstraints ? asn1SccInterrupt_Type_IsConstraintValid(pVal, pErrCode) : TRUE ;
+	ret = bCheckConstraints ? asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_IsConstraintValid(pVal, pErrCode) : TRUE ;
 	if (ret && *pErrCode == 0) {
 	    /*Encode interrupt */
 	    BitStream_EncodeConstraintPosWholeNumber(pBitStrm, pVal->interrupt, 0, 255);
@@ -542,7 +542,7 @@ flag asn1SccInterrupt_Type_Encode(const asn1SccInterrupt_Type* pVal, BitStream* 
     return ret;
 }
 
-flag asn1SccInterrupt_Type_Decode(asn1SccInterrupt_Type* pVal, BitStream* pBitStrm, int* pErrCode)
+flag asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_Decode(asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type* pVal, BitStream* pBitStrm, int* pErrCode)
 {
     flag ret = TRUE;
 	*pErrCode = 0;
@@ -552,15 +552,15 @@ flag asn1SccInterrupt_Type_Decode(asn1SccInterrupt_Type* pVal, BitStream* pBitSt
 	ret = BitStream_DecodeConstraintPosWholeNumber(pBitStrm, (&(pVal->interrupt)), 0, 255);
 	*pErrCode = ret ? 0 : ERR_UPER_DECODE_INTERRUPT_TYPE_INTERRUPT;
 
-	return ret  && asn1SccInterrupt_Type_IsConstraintValid(pVal, pErrCode);
+	return ret  && asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_IsConstraintValid(pVal, pErrCode);
 }
 
-flag asn1SccInterrupt_Type_ACN_Encode(const asn1SccInterrupt_Type* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints)
+flag asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_ACN_Encode(const asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints)
 {
     flag ret = TRUE;
 
     *pErrCode = 0;
-	ret = bCheckConstraints ? asn1SccInterrupt_Type_IsConstraintValid(pVal, pErrCode) : TRUE ;
+	ret = bCheckConstraints ? asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_IsConstraintValid(pVal, pErrCode) : TRUE ;
 	if (ret && *pErrCode == 0) {
 	    /*Encode interrupt */
 	    BitStream_EncodeConstraintPosWholeNumber(pBitStrm, pVal->interrupt, 0, 255);
@@ -570,7 +570,7 @@ flag asn1SccInterrupt_Type_ACN_Encode(const asn1SccInterrupt_Type* pVal, BitStre
     return ret;
 }
 
-flag asn1SccInterrupt_Type_ACN_Decode(asn1SccInterrupt_Type* pVal, BitStream* pBitStrm, int* pErrCode)
+flag asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_ACN_Decode(asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type* pVal, BitStream* pBitStrm, int* pErrCode)
 {
     flag ret = TRUE;
 	*pErrCode = 0;
@@ -580,7 +580,7 @@ flag asn1SccInterrupt_Type_ACN_Decode(asn1SccInterrupt_Type* pVal, BitStream* pB
 	ret = BitStream_DecodeConstraintPosWholeNumber(pBitStrm, (&(pVal->interrupt)), 0, 255);
 	*pErrCode = ret ? 0 : ERR_ACN_DECODE_INTERRUPT_TYPE_INTERRUPT;
 
-    return ret && asn1SccInterrupt_Type_IsConstraintValid(pVal, pErrCode);
+    return ret && asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_IsConstraintValid(pVal, pErrCode);
 }
 
 
