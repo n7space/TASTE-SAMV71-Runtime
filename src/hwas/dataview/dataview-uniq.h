@@ -174,46 +174,46 @@ flag asn1SccInterruptNumber_ACN_Encode(const asn1SccInterruptNumber* pVal, BitSt
 
 #define ERR_ACN_DECODE_INTERRUPTNUMBER		30  /**/
 flag asn1SccInterruptNumber_ACN_Decode(asn1SccInterruptNumber* pVal, BitStream* pBitStrm, int* pErrCode);
-/*-- asn1SccInterrupt_Type --------------------------------------------*/
-typedef asn1SccInterruptNumber asn1SccInterrupt_Type_interrupt;
+/*-- asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type --------------------------------------------*/
+typedef asn1SccInterruptNumber asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_interrupt;
 
 typedef struct {
-    asn1SccInterrupt_Type_interrupt interrupt;
+    asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_interrupt interrupt;
 
-} asn1SccInterrupt_Type;
+} asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type;
 
-flag asn1SccInterrupt_Type_interrupt_Equal(const asn1SccInterrupt_Type_interrupt* pVal1, const asn1SccInterrupt_Type_interrupt* pVal2);
+flag asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_interrupt_Equal(const asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_interrupt* pVal1, const asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_interrupt* pVal2);
 
-flag asn1SccInterrupt_Type_Equal(const asn1SccInterrupt_Type* pVal1, const asn1SccInterrupt_Type* pVal2);
+flag asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_Equal(const asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type* pVal1, const asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type* pVal2);
 
-void asn1SccInterrupt_Type_interrupt_Initialize(asn1SccInterrupt_Type_interrupt* pVal);
-void asn1SccInterrupt_Type_Initialize(asn1SccInterrupt_Type* pVal);
+void asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_interrupt_Initialize(asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_interrupt* pVal);
+void asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_Initialize(asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type* pVal);
 
 #define ERR_INTERRUPT_TYPE		51  /**/
 #define ERR_INTERRUPT_TYPE_INTERRUPT		46  /**/
-flag asn1SccInterrupt_Type_IsConstraintValid(const asn1SccInterrupt_Type* pVal, int* pErrCode);
+flag asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_IsConstraintValid(const asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type* pVal, int* pErrCode);
 
 #define ERR_UPER_ENCODE_INTERRUPT_TYPE		52  /**/
 #define ERR_UPER_ENCODE_INTERRUPT_TYPE_INTERRUPT		47  /**/
-#define asn1SccInterrupt_Type_REQUIRED_BYTES_FOR_ENCODING       1 
-#define asn1SccInterrupt_Type_REQUIRED_BITS_FOR_ENCODING        8
+#define asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_REQUIRED_BYTES_FOR_ENCODING       1 
+#define asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_REQUIRED_BITS_FOR_ENCODING        8
 
-flag asn1SccInterrupt_Type_Encode(const asn1SccInterrupt_Type* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+flag asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_Encode(const asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
 #define ERR_UPER_DECODE_INTERRUPT_TYPE		53  /**/
 #define ERR_UPER_DECODE_INTERRUPT_TYPE_INTERRUPT		48  /**/
-flag asn1SccInterrupt_Type_Decode(asn1SccInterrupt_Type* pVal, BitStream* pBitStrm, int* pErrCode);
+flag asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_Decode(asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type* pVal, BitStream* pBitStrm, int* pErrCode);
 
 #define ERR_ACN_ENCODE_INTERRUPT_TYPE		54  /**/
 #define ERR_ACN_ENCODE_INTERRUPT_TYPE_INTERRUPT		49  /**/
-#define asn1SccInterrupt_Type_REQUIRED_BYTES_FOR_ACN_ENCODING       1 
-#define asn1SccInterrupt_Type_REQUIRED_BITS_FOR_ACN_ENCODING        8
+#define asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_REQUIRED_BYTES_FOR_ACN_ENCODING       1 
+#define asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_REQUIRED_BITS_FOR_ACN_ENCODING        8
 
-flag asn1SccInterrupt_Type_ACN_Encode(const asn1SccInterrupt_Type* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
+flag asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_ACN_Encode(const asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type* pVal, BitStream* pBitStrm, int* pErrCode, flag bCheckConstraints);
 
 #define ERR_ACN_DECODE_INTERRUPT_TYPE		55  /**/
 #define ERR_ACN_DECODE_INTERRUPT_TYPE_INTERRUPT		50  /**/
-flag asn1SccInterrupt_Type_ACN_Decode(asn1SccInterrupt_Type* pVal, BitStream* pBitStrm, int* pErrCode);
+flag asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type_ACN_Decode(asn1SccInterruptSubscriptionInterfaceType_Interrupt_Type* pVal, BitStream* pBitStrm, int* pErrCode);
 typedef asn1SccUint asn1SccByte;
 
 
