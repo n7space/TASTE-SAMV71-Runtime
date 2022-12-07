@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataSheet xmlns="http://www.ccsds.org/schema/sois/seds" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.ccsds.org/schema/sois/seds seds.xsd">
+  <Device name="HwasComponent" />
+  <xi:include href="Hwas.xml" xpointer="element(/1/1)" />
+  <Package name="com/n7space/HwasComponent">
+    <ComponentSet>
+      <Component name="HWAS">
+        <LongDescription>Facade for the underlying microprocessor/microcontroller system.</LongDescription>
+        <ProvidedInterfaceSet>
+          <Interface name="InterruptSubscriptionManagement" type="com/n7space/Hwas/InterruptSubscriptionManagementInterfaceType" />
+          <Interface name="InterruptManagement" type="com/n7space/Hwas/InterruptManagementInterfaceType" />
+          <Interface name="RawMemoryAccess" type="com/n7space/Hwas/RawMemoryAccessInterfaceType" />
+        </ProvidedInterfaceSet>
+        <RequiredInterfaceSet>
+          <Interface name="InterruptSubscription" type="com/n7space/Hwas/InterruptSubscriptionInterfaceType" />
+        </RequiredInterfaceSet>
+      </Component>
+    </ComponentSet>
+  </Package>
+</DataSheet>
